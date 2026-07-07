@@ -63,7 +63,7 @@ function renderHome() {
     <button id="btn-zukan" class="secondary">📖 モンスターずかん</button>
     <button id="btn-back" class="secondary">👤 プレイヤーをかえる</button>
   `;
-  $("#btn-battle").addEventListener("click", startBattle);
+  $("#btn-battle").addEventListener("click", () => startBattle());
   $("#btn-zukan").addEventListener("click", renderZukan);
   $("#btn-back").addEventListener("click", renderProfile);
   show("#screen-home");
