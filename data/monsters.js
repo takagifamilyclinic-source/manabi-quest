@@ -10,7 +10,7 @@ export const MONSTERS = [
     motifEn: "small round snow spirit living in a kamakura snow hut",
     trivia:
       "かまくらは よこてしの 小正月の ぎょうじだよ。中で おもちを やくんだ",
-    img: null,
+    img: "assets/mon-yukibo.png",
   },
   {
     id: "yukiusa",
@@ -20,7 +20,7 @@ export const MONSTERS = [
     emoji: "🐰",
     motifEn: "fluffy white snow rabbit with leaf ears",
     trivia: "雪うさぎは 雪で つくる うさぎ。はっぱの 耳を つけるよ",
-    img: null,
+    img: "assets/mon-yukiusa.png",
   },
   {
     id: "fubukimaru",
@@ -30,7 +30,7 @@ export const MONSTERS = [
     emoji: "🐺",
     motifEn: "blizzard wolf with snowflake fur",
     trivia: "秋田の 冬は ふぶきが すごい。「じふぶき」と いうんだ",
-    img: null,
+    img: "assets/mon-fubukimaru.png",
   },
   {
     id: "chochinmaru",
@@ -42,7 +42,7 @@ export const MONSTERS = [
       "lantern fairy carrying a tall bamboo pole with many glowing paper lanterns",
     trivia:
       "秋田市の竿燈まつりは ちょうちんを 米だわらに 見立てて ほうさくを ねがうよ",
-    img: null,
+    img: "assets/mon-chochinmaru.png",
   },
   {
     id: "nebutaro",
@@ -52,7 +52,7 @@ export const MONSTERS = [
     emoji: "🎆",
     motifEn: "glowing warrior lantern monster from nebuta festival",
     trivia: "青森の ねぶた祭は 大きな 光る 山車が 町を すすむよ",
-    img: null,
+    img: "assets/mon-nebutaro.png",
   },
   {
     id: "bondenkun",
@@ -63,7 +63,7 @@ export const MONSTERS = [
     motifEn: "cheerful festival spirit carrying a tall decorated bonden pole",
     trivia:
       "ぼんでん(梵天)は よこての 冬まつり。長い ぼうを かついで 神社に おさめるよ",
-    img: null,
+    img: "assets/mon-bondenkun.png",
   },
   {
     id: "kokeshimaru",
@@ -73,7 +73,7 @@ export const MONSTERS = [
     emoji: "🪆",
     motifEn: "wooden kokeshi doll character with painted flowers",
     trivia: "こけしは 東北うまれの 木の にんぎょう。おんせん地で 生まれたよ",
-    img: null,
+    img: "assets/mon-kokeshimaru.png",
   },
   {
     id: "yakisoban",
@@ -83,7 +83,7 @@ export const MONSTERS = [
     emoji: "🍜",
     motifEn: "yakisoba noodle monster with sunny side up egg hat",
     trivia: "横手やきそばは 目玉やきが のっているのが とくちょうだよ",
-    img: null,
+    img: "assets/mon-yakisoban.png",
   },
   {
     id: "iburin",
@@ -93,7 +93,7 @@ export const MONSTERS = [
     emoji: "🦎",
     motifEn: "smoked pickle radish lizard, brown and cozy",
     trivia: "いぶりがっこは だいこんを けむりで いぶした 秋田の つけものだよ",
-    img: null,
+    img: "assets/mon-iburin.png",
   },
   {
     id: "hatahatan",
@@ -103,7 +103,7 @@ export const MONSTERS = [
     emoji: "🐟",
     motifEn: "small sandfish monster with lightning pattern",
     trivia: "ハタハタは 秋田県の 魚。カミナリの 鳴くころ とれるよ",
-    img: null,
+    img: "assets/mon-hatahatan.png",
   },
   {
     id: "kiritanpon",
@@ -113,7 +113,7 @@ export const MONSTERS = [
     emoji: "🍢",
     motifEn: "grilled rice stick monster on cedar skewer",
     trivia: "きりたんぽは ごはんを ぼうに つけて やいた 秋田の りょうりだよ",
-    img: null,
+    img: "assets/mon-kiritanpon.png",
   },
   {
     id: "zundamaru",
@@ -123,7 +123,7 @@ export const MONSTERS = [
     emoji: "🫛",
     motifEn: "green sweet edamame bean fairy",
     trivia: "ずんだもちは えだまめを つぶした あんの おもち。みやぎの めいぶつ",
-    img: null,
+    img: "assets/mon-zundamaru.png",
   },
   {
     id: "ringoro",
@@ -133,7 +133,7 @@ export const MONSTERS = [
     emoji: "🍎",
     motifEn: "round red apple monster with leaf tail",
     trivia: "りんごの しゅうかくりょう 日本一は 青森県だよ",
-    img: null,
+    img: "assets/mon-ringoro.png",
   },
   {
     id: "sakuranbou",
@@ -143,7 +143,7 @@ export const MONSTERS = [
     emoji: "🍒",
     motifEn: "twin cherry fairies connected by stems",
     trivia: "さくらんぼの しゅうかくりょう 日本一は 山形県だよ",
-    img: null,
+    img: "assets/mon-sakuranbou.png",
   },
   {
     id: "akitan",
@@ -153,7 +153,7 @@ export const MONSTERS = [
     emoji: "🐕",
     motifEn: "fluffy loyal akita dog puppy with curled tail",
     trivia: "秋田犬は 秋田うまれの 大きな 犬。ハチ公も 秋田犬だよ",
-    img: null,
+    img: "assets/mon-akitan.png",
   },
   {
     id: "chokaigan",
@@ -163,7 +163,7 @@ export const MONSTERS = [
     emoji: "⛰️",
     motifEn: "gentle rock giant shaped like a snowy mountain",
     trivia: "鳥海山は 秋田と 山形の さかいに ある 大きな 山だよ",
-    img: null,
+    img: "assets/mon-chokaigan.png",
   },
   {
     id: "shirakamin",
@@ -173,7 +173,7 @@ export const MONSTERS = [
     emoji: "🌳",
     motifEn: "ancient beech tree spirit with green leaves",
     trivia: "白神山地は 青森と 秋田に またがる ブナの森。世界いさんだよ",
-    img: null,
+    img: "assets/mon-shirakamin.png",
   },
   {
     id: "inaniwan",
@@ -183,7 +183,7 @@ export const MONSTERS = [
     emoji: "🍥",
     motifEn: "thin silky white noodle spirit, elegant",
     trivia: "稲庭うどんは 秋田の ほそくて つるつるの うどんだよ",
-    img: null,
+    img: "assets/mon-inaniwan.png",
   },
   {
     id: "namahagen",
@@ -194,7 +194,7 @@ export const MONSTERS = [
     motifEn: "friendly oni demon with straw coat and wooden knife, red face",
     trivia:
       "なまはげは 男鹿半島の ぎょうじ。「なくこは いねがー」と やってくるよ",
-    img: null,
+    img: "assets/mon-namahagen.png",
   },
   {
     id: "tazukohime",
@@ -204,6 +204,6 @@ export const MONSTERS = [
     emoji: "🧜‍♀️",
     motifEn: "golden lake princess spirit of lake tazawa",
     trivia: "田沢湖は 日本一 ふかい みずうみ。たつこ姫の でんせつが あるよ",
-    img: null,
+    img: "assets/mon-tazukohime.png",
   },
 ];

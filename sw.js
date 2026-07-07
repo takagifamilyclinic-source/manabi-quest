@@ -1,5 +1,5 @@
 // キャッシュファーストのService Worker。更新時は CACHE のバージョンを上げる
-const CACHE = "manabi-quest-v1.0.0";
+const CACHE = "manabi-quest-v1.1.0";
 const ASSETS = [
   "./",
   "./index.html",
@@ -12,6 +12,29 @@ const ASSETS = [
   "./js/state.js",
   "./data/monsters.js",
   "./manifest.json",
+  "./assets/icon-192.png",
+  "./assets/icon-512.png",
+  "./assets/icon-180.png",
+  "./assets/mon-akitan.png",
+  "./assets/mon-bondenkun.png",
+  "./assets/mon-chochinmaru.png",
+  "./assets/mon-chokaigan.png",
+  "./assets/mon-fubukimaru.png",
+  "./assets/mon-hatahatan.png",
+  "./assets/mon-iburin.png",
+  "./assets/mon-inaniwan.png",
+  "./assets/mon-kiritanpon.png",
+  "./assets/mon-kokeshimaru.png",
+  "./assets/mon-namahagen.png",
+  "./assets/mon-nebutaro.png",
+  "./assets/mon-ringoro.png",
+  "./assets/mon-sakuranbou.png",
+  "./assets/mon-shirakamin.png",
+  "./assets/mon-tazukohime.png",
+  "./assets/mon-yakisoban.png",
+  "./assets/mon-yukibo.png",
+  "./assets/mon-yukiusa.png",
+  "./assets/mon-zundamaru.png",
 ];
 
 self.addEventListener("install", (e) => {
