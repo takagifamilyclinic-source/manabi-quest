@@ -9,7 +9,7 @@
 
 ## iPadに入れる手順
 
-1. Safariで公開URL(`https://<owner>.github.io/manabi-quest/`)を開く
+1. Safariで公開URL(`https://takagifamilyclinic-source.github.io/manabi-quest/`)を開く
 2. 共有ボタン → 「ホーム画面に追加」
 3. 以後はホーム画面のアイコンから起動。オフラインでも動きます
 
