@@ -1,0 +1,4 @@
+.superpowers/
+*.log
+node_modules/
+.playwright-mcp/
