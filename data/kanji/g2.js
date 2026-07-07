@@ -1,8 +1,13 @@
 export const KANJI_G2 = [
   { kanji: "引", grade: 2, yomi: ["ひ", "いん"], meaning: "ひく" },
-  { kanji: "羽", grade: 2, yomi: ["は", "わ", "う"], meaning: "はね" },
+  { kanji: "羽", grade: 2, yomi: ["は", "う"], meaning: "はね" },
   { kanji: "雲", grade: 2, yomi: ["くも", "うん"], meaning: "くも" },
-  { kanji: "園", grade: 2, yomi: ["その", "えん"], meaning: "にわ・えん" },
+  {
+    kanji: "園",
+    grade: 2,
+    yomi: ["その", "えん"],
+    meaning: "その(こうえんなどの その)",
+  },
   { kanji: "遠", grade: 2, yomi: ["とお", "えん"], meaning: "とおい" },
   { kanji: "何", grade: 2, yomi: ["なに", "なん", "か"], meaning: "なに" },
   { kanji: "科", grade: 2, yomi: ["か"], meaning: "きょうか" },
