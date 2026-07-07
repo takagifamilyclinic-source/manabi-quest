@@ -126,6 +126,7 @@ function onKey(k) {
 }
 
 function submitAnswer() {
+  if (app.battle.finished) return;
   const { battle, correct, question } = answer(app.battle, app.input);
   app.battle = battle;
   app.input = "";
