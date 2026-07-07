@@ -70,7 +70,7 @@ function renderHome() {
 }
 
 function startBattle() {
-  const questions = generateSession(profile().gradeBand, 10);
+  const questions = generateSession(profile().grade, 10);
   const monster = pickEncounter(MONSTERS);
   app.battle = createBattle(questions, monster);
   app.input = "";

@@ -64,7 +64,7 @@ const GENERATORS = {
   // --- 中学年(3・4年) ---
   "add-3digit": (rng) => {
     const a = randInt(rng, 100, 899);
-    const b = randInt(rng, 100, 999 - a > 100 ? 999 - a : 100);
+    const b = randInt(rng, 100, 999 - a);
     return q(
       "add-3digit",
       `${a} + ${b} = ?`,
@@ -103,11 +103,36 @@ const GENERATORS = {
       `${b}のだんで ${b * ans}に なるのは? ${b} × ${ans} = ${b * ans} だから こたえは ${ans}`,
     );
   },
+  // --- 4年 ---
+  "mul-2x2": (rng) => {
+    const a = randInt(rng, 11, 99);
+    const b = randInt(rng, 11, 99);
+    return q(
+      "mul-2x2",
+      `${a} × ${b} = ?`,
+      a * b,
+      `ひっ算で といてみよう。${a} × ${b} = ${a * b}`,
+    );
+  },
+  "big-add": (rng) => {
+    const a = randInt(rng, 1000, 9999);
+    const b = randInt(rng, 1000, 9999);
+    return q(
+      "big-add",
+      `${a} + ${b} = ?`,
+      a + b,
+      `大きな数も 一のくらいから じゅんに たそう。こたえは ${a + b}`,
+    );
+  },
 };
 
+// 学年別カリキュラム(日本の算数)。1年に九九・わり算・かけ算は入れない。
+// ※あまりのあるわり算は答えが「◯あまり△」の2値でキーパッド入力に合わないため第2弾へ。
 export const GRADE_SKILLS = {
-  low: ["add-basic", "add-carry", "sub-basic", "sub-borrow", "kuku"],
-  mid: ["add-3digit", "sub-3digit", "mul-2x1", "div-basic"],
+  1: ["add-basic", "add-carry", "sub-basic", "sub-borrow"],
+  2: ["kuku", "add-carry", "sub-borrow", "add-3digit", "sub-3digit"],
+  3: ["div-basic", "mul-2x1", "add-3digit", "sub-3digit"],
+  4: ["div-basic", "mul-2x1", "mul-2x2", "big-add"],
 };
 
 export function generateQuestion(skillTag, rng = Math.random) {
@@ -116,8 +141,9 @@ export function generateQuestion(skillTag, rng = Math.random) {
   return gen(rng);
 }
 
-export function generateSession(gradeBand, count = 10, rng = Math.random) {
-  const skills = GRADE_SKILLS[gradeBand];
+export function generateSession(grade, count = 10, rng = Math.random) {
+  const skills = GRADE_SKILLS[grade];
+  if (!skills) throw new Error(`unknown grade: ${grade}`);
   return Array.from({ length: count }, () =>
     generateQuestion(skills[Math.floor(rng() * skills.length)], rng),
   );
