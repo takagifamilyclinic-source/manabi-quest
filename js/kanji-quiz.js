@@ -75,8 +75,9 @@ export function makeKanjiQuestion(skillTag, rng = Math.random) {
   }
 
   const answer = target.kanji;
+  const displayedYomi = target.yomi[0];
   const others = list
-    .filter((k) => k.kanji !== target.kanji)
+    .filter((k) => k.kanji !== target.kanji && !k.yomi.includes(displayedYomi))
     .map((k) => k.kanji);
   const dummies = sampleUnique(rng, others, 3, new Set([answer]));
   const choices = shuffle(rng, [answer, ...dummies]);

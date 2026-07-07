@@ -80,3 +80,20 @@ test("未知スキルはエラー", () => {
   assert.throws(() => makeKanjiQuestion("kanji-write-g0"));
   assert.throws(() => makeKanjiQuestion("unknown-skill"));
 });
+
+test("書き問題: ダミーに『表示した読みを持つ別の漢字』が混ざらない(正解一意)", () => {
+  for (const g of [1, 2, 3, 4]) {
+    for (let i = 0; i < 500; i++) {
+      const q = makeKanjiQuestion(`kanji-write-g${g}`);
+      const shown = q.text.match(/「(.+?)」/)[1]; // 表示された読み
+      for (const c of q.choices) {
+        if (c === q.answer) continue;
+        const k = KANJI_BY_GRADE[g].find((x) => x.kanji === c);
+        assert.ok(
+          k && !k.yomi.includes(shown),
+          `${g}年 ${shown}: ${c} も その読みを持つ`,
+        );
+      }
+    }
+  }
+});
