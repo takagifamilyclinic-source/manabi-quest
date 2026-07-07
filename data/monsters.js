@@ -33,8 +33,8 @@ export const MONSTERS = [
     img: null,
   },
   {
-    id: "kantopika",
-    name: "かんとぴか",
+    id: "chochinmaru",
+    name: "ちょうちんまる",
     type: "まつり",
     rarity: "R",
     emoji: "🏮",
@@ -59,7 +59,7 @@ export const MONSTERS = [
     name: "ぼんでんくん",
     type: "まつり",
     rarity: "R",
-    emoji: "🎏",
+    emoji: "🎋",
     motifEn: "cheerful festival spirit carrying a tall decorated bonden pole",
     trivia:
       "ぼんでん(梵天)は よこての 冬まつり。長い ぼうを かついで 神社に おさめるよ",
@@ -198,7 +198,7 @@ export const MONSTERS = [
   },
   {
     id: "tazukohime",
-    name: "たづこりん",
+    name: "たつこりん",
     type: "でんせつ",
     rarity: "SR",
     emoji: "🧜‍♀️",
