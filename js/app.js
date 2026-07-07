@@ -1,5 +1,5 @@
 // 画面描画と遷移。ロジックはすべて他モジュールに委譲する(ここだけDOM依存)
-import { generateSession } from "./math-gen.js";
+import { buildSession } from "./session.js";
 import { createBattle, answer } from "./battle.js";
 import { pickEncounter } from "./capture.js";
 import { load, save, recordSession } from "./state.js";
@@ -69,8 +69,13 @@ function renderHome() {
   show("#screen-home");
 }
 
-function startBattle() {
-  const questions = generateSession(profile().grade, 10);
+function startBattle(subject = "math") {
+  const questions = buildSession(profile().grade, subject, {
+    count: 10,
+    attempts: app.state.attempts,
+    profileId: app.profileId,
+  });
+  app.subject = subject;
   const monster = pickEncounter(MONSTERS);
   app.battle = createBattle(questions, monster);
   app.input = "";
