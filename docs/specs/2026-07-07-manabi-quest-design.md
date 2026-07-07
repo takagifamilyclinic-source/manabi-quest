@@ -110,3 +110,9 @@
 - 手書き文字認識(漢字の書き取り判定は選択式・なぞり表示で代替)
 - 音声読み上げ(将来検討: Web Speech APIなら無料で追加可能)
 - 複数iPad間の同期
+
+## 第2弾以降の必須TODO(第1弾レビューで確認)
+
+- **state.js のスキーマ移行**: `load()` は `version !== 1` で defaultState に戻すため、version を上げる前に移行関数を用意しないと、こどもの streak・図鑑が消える。スキーマ変更時は必須。
+- capture.js: 将来レア度を増やすなら未知rarityのガード追加。
+- math-gen.js: add-3digit の死んだ三項の整理・一部生成器の数学assert追加(任意)。
