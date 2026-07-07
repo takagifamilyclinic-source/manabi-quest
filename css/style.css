@@ -1,0 +1,217 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  font-family:
+    "Hiragino Maru Gothic ProN", "BIZ UDGothic", "Yu Gothic", sans-serif;
+  background: linear-gradient(160deg, #1a2456 0%, #2c3e8f 60%, #3f51a5 100%);
+  color: #fff;
+  user-select: none;
+}
+#app {
+  max-width: 640px;
+  margin: 0 auto;
+  min-height: 100%;
+  padding: max(16px, env(safe-area-inset-top)) 16px 24px;
+}
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 90vh;
+}
+.hidden {
+  display: none !important;
+}
+h1 {
+  font-size: 1.6rem;
+  text-align: center;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+.card {
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  padding: 16px;
+  backdrop-filter: blur(4px);
+}
+button {
+  font-family: inherit;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #1a2456;
+  background: linear-gradient(#ffe066, #ffb700);
+  border: none;
+  border-radius: 16px;
+  padding: 14px 20px;
+  min-height: 56px;
+  box-shadow: 0 4px 0 #b57f00;
+  cursor: pointer;
+}
+button:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #b57f00;
+}
+button.secondary {
+  background: linear-gradient(#e0e7ff, #aab8f0);
+  box-shadow: 0 4px 0 #6272b5;
+}
+.profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 1.4rem;
+  width: 100%;
+}
+.profile-btn .avatar {
+  font-size: 2.4rem;
+}
+.streak {
+  font-size: 1.1rem;
+  text-align: center;
+}
+.enemy {
+  text-align: center;
+}
+.enemy .face {
+  font-size: 5rem;
+  display: inline-block;
+}
+.enemy .face.hit {
+  animation: shake 0.4s;
+}
+@keyframes shake {
+  25% {
+    transform: translateX(-8px);
+  }
+  75% {
+    transform: translateX(8px);
+  }
+}
+.hpbar {
+  height: 14px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 7px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.hpbar > div {
+  height: 100%;
+  background: linear-gradient(#7cfc7c, #2eb82e);
+  transition: width 0.3s;
+}
+.qtext {
+  font-size: 2.2rem;
+  text-align: center;
+  padding: 12px 0;
+  letter-spacing: 0.05em;
+}
+.answer-display {
+  font-size: 2rem;
+  text-align: center;
+  min-height: 2.6rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+}
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.keypad button {
+  font-size: 1.6rem;
+  min-height: 60px;
+}
+.keypad .ok {
+  background: linear-gradient(#8effa0, #27c447);
+  box-shadow: 0 4px 0 #17812d;
+}
+.feedback {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 14, 40, 0.88);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  z-index: 10;
+}
+.feedback .mark {
+  font-size: 5rem;
+}
+.feedback .explain {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 16px;
+  font-size: 1.2rem;
+  line-height: 1.7;
+  max-width: 480px;
+}
+.zukan-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.zukan-cell {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 10px 4px;
+  font-size: 0.75rem;
+  border: 2px solid transparent;
+}
+.zukan-cell .face {
+  font-size: 2rem;
+  display: block;
+}
+.zukan-cell.unowned {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+.zukan-cell.rar-R {
+  border-color: #9ecbff;
+}
+.zukan-cell.rar-SR {
+  border-color: #ffd700;
+}
+.type-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  padding: 1px 8px;
+}
+.get-title {
+  font-size: 2rem;
+  text-align: center;
+  animation: pop 0.5s;
+}
+@keyframes pop {
+  0% {
+    transform: scale(0.2);
+  }
+  70% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.big-face {
+  font-size: 7rem;
+  text-align: center;
+}
+.monster-img {
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
+}
