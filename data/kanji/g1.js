@@ -60,7 +60,7 @@ export const KANJI_G1 = [
   {
     kanji: "生",
     grade: 1,
-    yomi: ["せい", "い", "なま"],
+    yomi: ["せい", "い", "う", "なま"],
     meaning: "いきる・うまれる",
   },
   { kanji: "青", grade: 1, yomi: ["あお", "せい"], meaning: "あおいろ" },
