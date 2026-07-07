@@ -103,6 +103,38 @@ const GENERATORS = {
       `${b}のだんで ${b * ans}に なるのは? ${b} × ${ans} = ${b * ans} だから こたえは ${ans}`,
     );
   },
+  // --- 2年(2桁の筆算) ---
+  "add-2digit": (rng) => {
+    const a = randInt(rng, 10, 89);
+    const b = randInt(rng, 10, 89);
+    return q(
+      "add-2digit",
+      `${a} + ${b} = ?`,
+      a + b,
+      `ひっ算で 一のくらいから たそう。${a} + ${b} = ${a + b}`,
+    );
+  },
+  "sub-2digit": (rng) => {
+    const a = randInt(rng, 21, 99);
+    const b = randInt(rng, 10, a - 1);
+    return q(
+      "sub-2digit",
+      `${a} - ${b} = ?`,
+      a - b,
+      `ひっ算で 一のくらいから ひこう。${a} - ${b} = ${a - b}`,
+    );
+  },
+  // --- 4年(2桁でわるわり算) ---
+  "div-2digit": (rng) => {
+    const b = randInt(rng, 11, 20);
+    const ans = randInt(rng, 2, 9);
+    return q(
+      "div-2digit",
+      `${b * ans} ÷ ${b} = ?`,
+      ans,
+      `${b} × ? = ${b * ans}。${b} × ${ans} = ${b * ans} だから こたえは ${ans}`,
+    );
+  },
   // --- 4年 ---
   "mul-2x2": (rng) => {
     const a = randInt(rng, 11, 99);
@@ -130,9 +162,9 @@ const GENERATORS = {
 // ※あまりのあるわり算は答えが「◯あまり△」の2値でキーパッド入力に合わないため第2弾へ。
 export const GRADE_SKILLS = {
   1: ["add-basic", "add-carry", "sub-basic", "sub-borrow"],
-  2: ["kuku", "add-carry", "sub-borrow", "add-3digit", "sub-3digit"],
+  2: ["kuku", "add-2digit", "sub-2digit"],
   3: ["div-basic", "mul-2x1", "add-3digit", "sub-3digit"],
-  4: ["div-basic", "mul-2x1", "mul-2x2", "big-add"],
+  4: ["div-basic", "div-2digit", "mul-2x1", "mul-2x2", "big-add"],
 };
 
 export function generateQuestion(skillTag, rng = Math.random) {

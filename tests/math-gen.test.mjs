@@ -62,6 +62,29 @@ test("big-add は4桁どうしのたし算で答えが正しい", () => {
   }
 });
 
+test("add-2digit / sub-2digit は2桁の計算で答えが正しい", () => {
+  for (let i = 0; i < 300; i++) {
+    const qa = generateQuestion("add-2digit");
+    const [, a1, , b1] = qa.text.match(NUM_RE).map(Number);
+    assert.ok(a1 >= 10 && a1 <= 89 && b1 >= 10 && b1 <= 89);
+    assert.equal(a1 + b1, qa.answer);
+    const qs = generateQuestion("sub-2digit");
+    const [, a2, , b2] = qs.text.match(NUM_RE).map(Number);
+    assert.ok(a2 > b2, `${a2}-${b2} が負になる`);
+    assert.equal(a2 - b2, qs.answer);
+  }
+});
+
+test("div-2digit は2桁の除数で必ずわり切れる", () => {
+  for (let i = 0; i < 300; i++) {
+    const q = generateQuestion("div-2digit");
+    const [, a, , b] = q.text.match(NUM_RE).map(Number);
+    assert.ok(b >= 11 && b <= 20, `除数 ${b} が2桁でない`);
+    assert.equal(a % b, 0);
+    assert.equal(a / b, q.answer);
+  }
+});
+
 test("全スキルが解説つきの問題を返す(全学年)", () => {
   for (const grade of [1, 2, 3, 4]) {
     for (const s of GRADE_SKILLS[grade]) {
@@ -89,15 +112,20 @@ test("1年生に九九・わり算・かけ算は出ない(学年別カリキュ
   }
   // 1年はたし算ひき算のみ
   assert.deepEqual(g1, ["add-basic", "add-carry", "sub-basic", "sub-borrow"]);
-  // 九九は2年から
+  // 2年: 九九+2桁筆算(3桁はまだ出さない)
   assert.ok(GRADE_SKILLS[2].includes("kuku"));
-  // わり算は3年から(1・2年には無い)
+  assert.ok(GRADE_SKILLS[2].includes("add-2digit"));
+  assert.ok(!GRADE_SKILLS[2].includes("add-3digit"));
   assert.ok(!GRADE_SKILLS[2].includes("div-basic"));
+  // わり算は3年から。3桁の加減も3年
   assert.ok(GRADE_SKILLS[3].includes("div-basic"));
-  // 2桁×2桁・大きな数は4年のみ
+  assert.ok(GRADE_SKILLS[3].includes("add-3digit"));
+  // 4年のみ: 2桁×2桁・大きな数・2桁でわるわり算
   assert.ok(GRADE_SKILLS[4].includes("mul-2x2"));
   assert.ok(GRADE_SKILLS[4].includes("big-add"));
+  assert.ok(GRADE_SKILLS[4].includes("div-2digit"));
   assert.ok(!GRADE_SKILLS[3].includes("mul-2x2"));
+  assert.ok(!GRADE_SKILLS[3].includes("div-2digit"));
 });
 
 test("generateSession は指定学年のスキルだけで指定数を返す", () => {

@@ -35,7 +35,35 @@ test("defaultState は1〜4年生の4プロフィールを持つ", () => {
 
 test("load: 空ストレージなら defaultState", () => {
   const s = load(memStorage());
-  assert.equal(s.version, 1);
+  assert.equal(s.version, 2);
+});
+
+test("load: 旧v1データ(gradeBand・2人)は安全にv2デフォルトへリセットされる", () => {
+  const st = memStorage();
+  const oldV1 = {
+    version: 1,
+    profiles: [
+      { id: "p1", nickname: "ゆうしゃ1", gradeBand: "low", avatar: "🦊" },
+    ],
+    progress: {
+      p1: {
+        streak: 9,
+        lastPlayedDate: "2026-07-06",
+        monsters: ["yukibo"],
+        sessions: 3,
+      },
+    },
+    attempts: [],
+  };
+  st.setItem("manabi-quest-v1", JSON.stringify(oldV1));
+  const s = load(st);
+  // 旧スキーマは弾き、4学年のデフォルトになる(grade未定義でのクラッシュを防ぐ)
+  assert.equal(s.version, 2);
+  assert.equal(s.profiles.length, 4);
+  assert.deepEqual(
+    s.profiles.map((p) => p.grade),
+    [1, 2, 3, 4],
+  );
 });
 
 test("save して load すると同じ状態が返る", () => {
@@ -49,7 +77,7 @@ test("save して load すると同じ状態が返る", () => {
 test("load: 壊れたJSONでも defaultState に戻る", () => {
   const st = memStorage();
   st.setItem(STORAGE_KEY, "{{{broken");
-  assert.equal(load(st).version, 1);
+  assert.equal(load(st).version, 2);
 });
 
 test("recordSession: モンスター獲得・streak更新・attempts追記", () => {
