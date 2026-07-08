@@ -2,7 +2,13 @@
 import { buildSession } from "./session.js";
 import { createBattle, answer } from "./battle.js";
 import { pickEncounter } from "./capture.js";
-import { load, save, recordSession, STORAGE_KEY } from "./state.js";
+import {
+  load,
+  save,
+  recordSession,
+  exchangeReward,
+  STORAGE_KEY,
+} from "./state.js";
 import { todayString } from "./streak.js";
 import { MONSTERS } from "../data/monsters.js";
 import { weaknessTop } from "./weakness.js";
@@ -129,13 +135,83 @@ function renderParentDash() {
       <div style="margin-top:6px"><b>にがて トップ5</b><br>${top}</div></div>`;
     })
     .join("");
+  const rewardRows =
+    app.state.settings.rewards
+      .map(
+        (r) => `<div class="rw-row">🎁 ${esc(r.name)} = ${r.cost}pt
+      <button class="rw-del secondary" data-id="${esc(r.id)}">けす</button></div>`,
+      )
+      .join("") || "まだ ありません";
+  const childOpts = app.state.profiles
+    .map(
+      (p) =>
+        `<option value="${p.id}">${esc(p.nickname)}(${app.state.progress[p.id].points}pt)</option>`,
+    )
+    .join("");
+  const rewardOpts = app.state.settings.rewards
+    .map(
+      (r) =>
+        `<option value="${esc(r.id)}">${esc(r.name)} (${r.cost}pt)</option>`,
+    )
+    .join("");
   $("#screen-parent").innerHTML = `
     <h1>おうちの人ページ</h1>${rows}
+    <div class="card"><b>🎁 ごほうび一覧</b>
+      <div class="rw-list">${rewardRows}</div>
+      <input id="rw-name" placeholder="なまえ (れい: アイス)" />
+      <input id="rw-cost" inputmode="numeric" placeholder="ひつような ポイント" />
+      <button id="rw-add">ついか</button></div>
+    <div class="card"><b>🪙 ごほうび交換</b>
+      <select id="ex-child">${childOpts}</select>
+      <select id="ex-reward">${rewardOpts}</select>
+      <button id="ex-do">こうかん</button>
+      <div id="ex-msg" class="ex-msg"></div></div>
     <button id="p-export">きろくを 書き出す</button>
     <textarea id="p-export-area" class="export" readonly></textarea>
     <button id="p-pin" class="secondary">PINを かえる</button>
     <button id="p-reset" class="secondary">きろくを リセット</button>
     <button id="p-back" class="secondary">もどる</button>`;
+  document.querySelectorAll(".rw-del").forEach((b) =>
+    b.addEventListener("click", () => {
+      app.state.settings.rewards = app.state.settings.rewards.filter(
+        (r) => r.id !== b.dataset.id,
+      );
+      save(localStorage, app.state);
+      renderParentDash();
+    }),
+  );
+  $("#rw-add").addEventListener("click", () => {
+    const name = $("#rw-name").value.trim();
+    const cost = parseInt($("#rw-cost").value, 10);
+    if (name && Number.isInteger(cost) && cost > 0) {
+      app.state.settings.rewards.push({
+        id: "r" + Date.now() + "-" + app.state.settings.rewards.length,
+        name,
+        cost,
+      });
+      save(localStorage, app.state);
+      renderParentDash();
+    }
+  });
+  $("#ex-do").addEventListener("click", () => {
+    const pid = $("#ex-child").value;
+    const reward = app.state.settings.rewards.find(
+      (r) => r.id === $("#ex-reward").value,
+    );
+    if (!reward) {
+      $("#ex-msg").textContent = "ごほうびを ついかしてね";
+      return;
+    }
+    const res = exchangeReward(app.state, pid, reward, todayString());
+    if (res.ok) {
+      app.state = res.state;
+      save(localStorage, app.state);
+      renderParentDash();
+      $("#ex-msg").textContent = `「${reward.name}」を こうかんしました`;
+    } else {
+      $("#ex-msg").textContent = "ポイントが たりません";
+    }
+  });
   $("#p-export").addEventListener("click", () => {
     const { settings, ...rest } = app.state;
     const safe = {
@@ -172,10 +248,12 @@ function renderHome() {
       🪙 ポイント <b>${prog.points}</b></div>
     <button id="btn-battle">⚔️ バトルに でかける</button>
     <button id="btn-zukan" class="secondary">📖 モンスターずかん</button>
+    <button id="btn-reward" class="secondary">🎁 ごほうび</button>
     <button id="btn-back" class="secondary">👤 プレイヤーをかえる</button>
   `;
   $("#btn-battle").addEventListener("click", renderSubject);
   $("#btn-zukan").addEventListener("click", renderZukan);
+  $("#btn-reward").addEventListener("click", renderReward);
   $("#btn-back").addEventListener("click", renderProfile);
   show("#screen-home");
 }
@@ -339,6 +417,28 @@ function renderZukan() {
   );
   $("#btn-home2").addEventListener("click", renderHome);
   show("#screen-zukan");
+}
+
+function renderReward() {
+  const prog = progress();
+  const rewards = app.state.settings.rewards;
+  const list =
+    rewards
+      .map((r) => {
+        const enough = prog.points >= r.cost;
+        return `<div class="rw-row ${enough ? "rw-ok" : ""}">🎁 ${esc(r.name)}
+          <b>${r.cost}pt</b> ${enough ? "✅ こうかんできる!" : ""}</div>`;
+      })
+      .join("") || `<div>まだ ごほうびが ありません</div>`;
+  $("#screen-reward").innerHTML = `
+    <h1>🎁 ごほうび</h1>
+    <div class="card streak">🪙 いまの ポイント <b>${prog.points}</b></div>
+    <div class="card">${list}</div>
+    <div class="card note">こうかんは おうちの人に おねがいしてね</div>
+    <button id="btn-home3" class="secondary">ホームへ もどる</button>
+  `;
+  $("#btn-home3").addEventListener("click", renderHome);
+  show("#screen-reward");
 }
 
 renderProfile();

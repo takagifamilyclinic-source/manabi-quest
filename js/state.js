@@ -153,3 +153,27 @@ export function recordSession(state, profileId, battle, todayStr) {
     ],
   };
 }
+
+// ごほうび交換：残高十分なら points を減算し rewardLog に記録して {ok:true,state}、
+// 不足なら state を変えず {ok:false,state}。副作用なし(新しい state を返す)。
+export function exchangeReward(state, profileId, reward, dateStr) {
+  const prog = state.progress[profileId];
+  if (prog.points < reward.cost) return { ok: false, state };
+  return {
+    ok: true,
+    state: {
+      ...state,
+      progress: {
+        ...state.progress,
+        [profileId]: { ...prog, points: prog.points - reward.cost },
+      },
+      settings: {
+        ...state.settings,
+        rewardLog: [
+          ...state.settings.rewardLog,
+          { date: dateStr, profileId, name: reward.name, cost: reward.cost },
+        ],
+      },
+    },
+  };
+}
