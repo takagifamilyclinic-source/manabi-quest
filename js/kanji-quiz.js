@@ -12,7 +12,15 @@ export const KANJI_BY_GRADE = {
 };
 
 export function kanjiSkills(grade) {
-  return [`kanji-read-g${grade}`, `kanji-write-g${grade}`];
+  const base = [`kanji-read-g${grade}`, `kanji-write-g${grade}`];
+  if (grade === 1 || grade === 2)
+    return [
+      ...base,
+      `kanji-mean-g${grade}`,
+      `kanji-radical-g${grade}`,
+      `kanji-stroke-g${grade}`,
+    ];
+  return base;
 }
 
 function pick(rng, arr) {
@@ -44,13 +52,67 @@ function shuffle(rng, arr) {
 }
 
 export function makeKanjiQuestion(skillTag, rng = Math.random) {
-  const m = skillTag.match(/^kanji-(read|write)-g(\d)$/);
+  const m = skillTag.match(/^kanji-(read|write|mean|radical|stroke)-g(\d)$/);
   if (!m) throw new Error(`unknown kanji skill: ${skillTag}`);
   const kind = m[1];
   const grade = Number(m[2]);
   const list = KANJI_BY_GRADE[grade];
   if (!list) throw new Error(`unknown grade: ${grade}`);
   const target = pick(rng, list);
+
+  if (kind === "mean") {
+    const answer = target.meaning;
+    const otherMeanings = list
+      .filter((k) => k.kanji !== target.kanji)
+      .map((k) => k.meaning);
+    const dummies = sampleUnique(rng, otherMeanings, 3, new Set([answer]));
+    const choices = shuffle(rng, [answer, ...dummies]);
+    return {
+      subject: "kanji",
+      skillTag,
+      text: `「${target.kanji}」の いみは どれ?`,
+      choices,
+      answer,
+      explanation: `${target.kanji} = ${target.meaning}`,
+    };
+  }
+
+  if (kind === "radical") {
+    const answer = target.radical;
+    const otherRadicals = list
+      .filter((k) => k.kanji !== target.kanji)
+      .map((k) => k.radical);
+    const dummies = sampleUnique(rng, otherRadicals, 3, new Set([answer]));
+    const choices = shuffle(rng, [answer, ...dummies]);
+    return {
+      subject: "kanji",
+      skillTag,
+      text: `「${target.kanji}」の ぶしゅは どれ?`,
+      choices,
+      answer,
+      explanation: `${target.kanji} の ぶしゅは ${target.radical}`,
+    };
+  }
+
+  if (kind === "stroke") {
+    const s = target.strokes;
+    const answer = String(s);
+    const cand = [s - 2, s - 1, s + 1, s + 2, s - 3, s + 3].filter(
+      (x) => x >= 1 && x !== s,
+    );
+    const dummies = shuffle(rng, cand)
+      .slice(0, 3)
+      .map((x) => String(x));
+    const choices = shuffle(rng, [answer, ...dummies]);
+    return {
+      subject: "kanji",
+      skillTag,
+      text: `「${target.kanji}」は 何画?`,
+      choices,
+      answer,
+      explanation: `${target.kanji} は ${target.strokes}画`,
+    };
+  }
 
   if (kind === "read") {
     const answer = target.yomi[0];

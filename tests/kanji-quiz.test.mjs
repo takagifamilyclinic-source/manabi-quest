@@ -6,9 +6,21 @@ import {
   KANJI_BY_GRADE,
 } from "../js/kanji-quiz.js";
 
-test("kanjiSkills は読み・書きを返す", () => {
-  assert.deepEqual(kanjiSkills(1), ["kanji-read-g1", "kanji-write-g1"]);
-  assert.deepEqual(kanjiSkills(2), ["kanji-read-g2", "kanji-write-g2"]);
+test("kanjiSkills は読み・書きを返す(1・2年は意味・部首・筆順も)", () => {
+  assert.deepEqual(kanjiSkills(1), [
+    "kanji-read-g1",
+    "kanji-write-g1",
+    "kanji-mean-g1",
+    "kanji-radical-g1",
+    "kanji-stroke-g1",
+  ]);
+  assert.deepEqual(kanjiSkills(2), [
+    "kanji-read-g2",
+    "kanji-write-g2",
+    "kanji-mean-g2",
+    "kanji-radical-g2",
+    "kanji-stroke-g2",
+  ]);
   assert.deepEqual(kanjiSkills(3), ["kanji-read-g3", "kanji-write-g3"]);
   assert.deepEqual(kanjiSkills(4), ["kanji-read-g4", "kanji-write-g4"]);
 });
