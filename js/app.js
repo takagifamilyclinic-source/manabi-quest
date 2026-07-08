@@ -5,6 +5,7 @@ import { pickEncounter } from "./capture.js";
 import { load, save, recordSession } from "./state.js";
 import { todayString } from "./streak.js";
 import { MONSTERS } from "../data/monsters.js";
+import { weaknessTop } from "./weakness.js";
 
 const app = {
   state: load(localStorage),
@@ -52,6 +53,94 @@ function renderProfile() {
     }),
   );
   show("#screen-profile");
+  attachParentGear();
+}
+
+function attachParentGear() {
+  if ($("#screen-profile .parent-gear")) return; // 二重付与防止
+  const gear = document.createElement("div");
+  gear.textContent = "⚙";
+  gear.className = "parent-gear";
+  let timer = null;
+  const start = () => {
+    timer = setTimeout(openParentGate, 900);
+  };
+  const cancel = () => clearTimeout(timer);
+  gear.addEventListener("touchstart", start);
+  gear.addEventListener("mousedown", start);
+  ["touchend", "touchcancel", "mouseup", "mouseleave"].forEach((e) =>
+    gear.addEventListener(e, cancel),
+  );
+  $("#screen-profile").appendChild(gear);
+}
+
+function openParentGate() {
+  const pin = app.state.settings.pin;
+  $("#screen-parent").innerHTML = pin
+    ? `<h1>おうちの人ページ</h1><div class="card">PINを いれてください</div>
+       <input id="pin-in" class="pin" inputmode="numeric" maxlength="4" />
+       <button id="pin-ok">かくにん</button><button id="pin-cancel" class="secondary">もどる</button>
+       <div id="pin-msg"></div>`
+    : `<h1>おうちの人ページ</h1><div class="card">はじめに 4けたのPINを きめてください</div>
+       <input id="pin-set" class="pin" inputmode="numeric" maxlength="4" />
+       <button id="pin-save">せってい</button><button id="pin-cancel" class="secondary">もどる</button>`;
+  show("#screen-parent");
+  $("#pin-cancel").addEventListener("click", renderProfile);
+  if (pin) {
+    $("#pin-ok").addEventListener("click", () => {
+      if ($("#pin-in").value === pin) renderParentDash();
+      else $("#pin-msg").textContent = "PINが ちがいます";
+    });
+  } else {
+    $("#pin-save").addEventListener("click", () => {
+      const v = $("#pin-set").value;
+      if (/^\d{4}$/.test(v)) {
+        app.state.settings.pin = v;
+        save(localStorage, app.state);
+        renderParentDash();
+      }
+    });
+  }
+}
+
+function renderParentDash() {
+  const rows = app.state.profiles
+    .map((p) => {
+      const pr = app.state.progress[p.id];
+      const top =
+        weaknessTop(app.state.attempts, p.id, 5)
+          .map((t) => `${t.skillTag} ${Math.round(t.rate * 100)}%(${t.tries})`)
+          .join("<br>") || "きろく なし";
+      return `<div class="card"><b>${p.avatar} ${p.nickname}</b>
+      <div>れんぞく ${pr.streak}日 / セッション ${pr.sessions} / ずかん ${pr.monsters.length}</div>
+      <div style="margin-top:6px"><b>にがて トップ5</b><br>${top}</div></div>`;
+    })
+    .join("");
+  $("#screen-parent").innerHTML = `
+    <h1>おうちの人ページ</h1>${rows}
+    <button id="p-export">きろくを 書き出す</button>
+    <textarea id="p-export-area" class="export" readonly></textarea>
+    <button id="p-pin" class="secondary">PINを かえる</button>
+    <button id="p-reset" class="secondary">きろくを リセット</button>
+    <button id="p-back" class="secondary">もどる</button>`;
+  $("#p-export").addEventListener("click", () => {
+    $("#p-export-area").value = JSON.stringify(app.state, null, 2);
+    $("#p-export-area").select();
+  });
+  $("#p-pin").addEventListener("click", () => {
+    app.state.settings.pin = null;
+    save(localStorage, app.state);
+    openParentGate();
+  });
+  $("#p-reset").addEventListener("click", () => {
+    if (confirm("すべての きろくを けします。よいですか?")) {
+      localStorage.removeItem("manabi-quest-v1");
+      app.state = load(localStorage);
+      renderProfile();
+    }
+  });
+  $("#p-back").addEventListener("click", renderProfile);
+  show("#screen-parent");
 }
 
 function renderHome() {

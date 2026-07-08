@@ -13,3 +13,22 @@ export function weightBySkill(skills, attempts, profileId, opts = {}) {
     return 1 + weak * (1 - p);
   });
 }
+
+// 苦手トップN(正答率の低い順)。実績があるスキルのみ対象。親ページ表示用。
+export function weaknessTop(attempts, profileId, n = 5) {
+  const mine = attempts.filter((a) => a.profileId === profileId);
+  const by = {};
+  for (const a of mine) {
+    by[a.skillTag] ??= { skillTag: a.skillTag, tries: 0, ok: 0 };
+    by[a.skillTag].tries++;
+    if (a.correct) by[a.skillTag].ok++;
+  }
+  return Object.values(by)
+    .map((v) => ({
+      skillTag: v.skillTag,
+      rate: v.ok / v.tries,
+      tries: v.tries,
+    }))
+    .sort((x, y) => x.rate - y.rate)
+    .slice(0, n);
+}
