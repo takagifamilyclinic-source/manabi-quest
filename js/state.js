@@ -1,5 +1,6 @@
 // アプリ状態の初期化・保存・セッション記録。storageは注入式(実機=localStorage)
 import { updateStreak } from "./streak.js";
+import { sessionGain, addCapture } from "./progress-calc.js";
 
 export const STORAGE_KEY = "manabi-quest-v1";
 
@@ -7,7 +8,8 @@ export const STORAGE_KEY = "manabi-quest-v1";
 // v1(旧 gradeBand・2プロフィール)のデータは load() で defaultState にリセットする
 // (未公開のため実データ消失なし。将来の版上げ時は移行関数が必要=設計書TODO参照)。
 // v3: settings.pin 追加(ロック・アンロック機構用)。
-const SCHEMA_VERSION = 3;
+// v4: progress に xp/points/captures を追加(monsters削除)、settings に rewards/rewardLog追加。
+const SCHEMA_VERSION = 4;
 
 export function defaultState() {
   return {
@@ -19,13 +21,41 @@ export function defaultState() {
       { id: "p4", nickname: "4ねんせい", grade: 4, avatar: "🐸" },
     ],
     progress: {
-      p1: { streak: 0, lastPlayedDate: null, monsters: [], sessions: 0 },
-      p2: { streak: 0, lastPlayedDate: null, monsters: [], sessions: 0 },
-      p3: { streak: 0, lastPlayedDate: null, monsters: [], sessions: 0 },
-      p4: { streak: 0, lastPlayedDate: null, monsters: [], sessions: 0 },
+      p1: {
+        streak: 0,
+        lastPlayedDate: null,
+        captures: {},
+        sessions: 0,
+        xp: 0,
+        points: 0,
+      },
+      p2: {
+        streak: 0,
+        lastPlayedDate: null,
+        captures: {},
+        sessions: 0,
+        xp: 0,
+        points: 0,
+      },
+      p3: {
+        streak: 0,
+        lastPlayedDate: null,
+        captures: {},
+        sessions: 0,
+        xp: 0,
+        points: 0,
+      },
+      p4: {
+        streak: 0,
+        lastPlayedDate: null,
+        captures: {},
+        sessions: 0,
+        xp: 0,
+        points: 0,
+      },
     },
     attempts: [],
-    settings: { pin: null },
+    settings: { pin: null, rewards: [], rewardLog: [] },
   };
 }
 
@@ -58,9 +88,7 @@ export function save(storage, state) {
 
 export function recordSession(state, profileId, battle, todayStr) {
   const prog = state.progress[profileId];
-  const monsters = prog.monsters.includes(battle.monster.id)
-    ? prog.monsters
-    : [...prog.monsters, battle.monster.id];
+  const gain = sessionGain(battle);
   return {
     ...state,
     progress: {
@@ -68,8 +96,10 @@ export function recordSession(state, profileId, battle, todayStr) {
       [profileId]: {
         ...prog,
         ...updateStreak(prog, todayStr),
-        monsters,
+        captures: addCapture(prog.captures, battle.monster.id),
         sessions: prog.sessions + 1,
+        xp: prog.xp + gain.xp,
+        points: prog.points + gain.points,
       },
     },
     attempts: [
