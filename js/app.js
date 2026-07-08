@@ -2,7 +2,7 @@
 import { buildSession } from "./session.js";
 import { createBattle, answer } from "./battle.js";
 import { pickEncounter } from "./capture.js";
-import { load, save, recordSession } from "./state.js";
+import { load, save, recordSession, STORAGE_KEY } from "./state.js";
 import { todayString } from "./streak.js";
 import { MONSTERS } from "../data/monsters.js";
 import { weaknessTop } from "./weakness.js";
@@ -13,6 +13,15 @@ const app = {
   battle: null,
   input: "",
 };
+
+const esc = (s) =>
+  String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        c
+      ],
+  );
 
 const $ = (sel) => document.querySelector(sel);
 function show(id) {
@@ -109,9 +118,12 @@ function renderParentDash() {
       const pr = app.state.progress[p.id];
       const top =
         weaknessTop(app.state.attempts, p.id, 5)
-          .map((t) => `${t.skillTag} ${Math.round(t.rate * 100)}%(${t.tries})`)
+          .map(
+            (t) =>
+              `${esc(t.skillTag)} ${Math.round(t.rate * 100)}%(${t.tries})`,
+          )
           .join("<br>") || "きろく なし";
-      return `<div class="card"><b>${p.avatar} ${p.nickname}</b>
+      return `<div class="card"><b>${esc(p.avatar)} ${esc(p.nickname)}</b>
       <div>れんぞく ${pr.streak}日 / セッション ${pr.sessions} / ずかん ${pr.monsters.length}</div>
       <div style="margin-top:6px"><b>にがて トップ5</b><br>${top}</div></div>`;
     })
@@ -124,7 +136,12 @@ function renderParentDash() {
     <button id="p-reset" class="secondary">きろくを リセット</button>
     <button id="p-back" class="secondary">もどる</button>`;
   $("#p-export").addEventListener("click", () => {
-    $("#p-export-area").value = JSON.stringify(app.state, null, 2);
+    const { settings, ...rest } = app.state;
+    const safe = {
+      ...rest,
+      settings: { ...settings, pin: settings.pin ? "****" : null },
+    };
+    $("#p-export-area").value = JSON.stringify(safe, null, 2);
     $("#p-export-area").select();
   });
   $("#p-pin").addEventListener("click", () => {
@@ -134,7 +151,7 @@ function renderParentDash() {
   });
   $("#p-reset").addEventListener("click", () => {
     if (confirm("すべての きろくを けします。よいですか?")) {
-      localStorage.removeItem("manabi-quest-v1");
+      localStorage.removeItem(STORAGE_KEY);
       app.state = load(localStorage);
       renderProfile();
     }
