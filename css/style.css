@@ -133,6 +133,15 @@ button.secondary {
   background: linear-gradient(#8effa0, #27c447);
   box-shadow: 0 4px 0 #17812d;
 }
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.choices .choice {
+  font-size: 1.8rem;
+  min-height: 72px;
+}
 .feedback {
   position: fixed;
   inset: 0;
@@ -214,4 +223,27 @@ button.secondary {
   width: 128px;
   height: 128px;
   object-fit: contain;
+}
+.parent-gear {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  font-size: 1.6rem;
+  opacity: 0.35;
+  padding: 8px;
+  cursor: pointer;
+}
+.pin {
+  font-size: 2rem;
+  letter-spacing: 0.5em;
+  text-align: center;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  width: 100%;
+}
+.export {
+  width: 100%;
+  height: 140px;
+  font-size: 0.8rem;
 }

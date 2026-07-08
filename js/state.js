@@ -6,7 +6,8 @@ export const STORAGE_KEY = "manabi-quest-v1";
 // スキーマ版。学年別プロフィール(grade)化で v2 に更新。
 // v1(旧 gradeBand・2プロフィール)のデータは load() で defaultState にリセットする
 // (未公開のため実データ消失なし。将来の版上げ時は移行関数が必要=設計書TODO参照)。
-const SCHEMA_VERSION = 2;
+// v3: settings.pin 追加(ロック・アンロック機構用)。
+const SCHEMA_VERSION = 3;
 
 export function defaultState() {
   return {
@@ -24,6 +25,7 @@ export function defaultState() {
       p4: { streak: 0, lastPlayedDate: null, monsters: [], sessions: 0 },
     },
     attempts: [],
+    settings: { pin: null },
   };
 }
 

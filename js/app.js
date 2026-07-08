@@ -1,10 +1,11 @@
 // 画面描画と遷移。ロジックはすべて他モジュールに委譲する(ここだけDOM依存)
-import { generateSession } from "./math-gen.js";
+import { buildSession } from "./session.js";
 import { createBattle, answer } from "./battle.js";
 import { pickEncounter } from "./capture.js";
-import { load, save, recordSession } from "./state.js";
+import { load, save, recordSession, STORAGE_KEY } from "./state.js";
 import { todayString } from "./streak.js";
 import { MONSTERS } from "../data/monsters.js";
+import { weaknessTop } from "./weakness.js";
 
 const app = {
   state: load(localStorage),
@@ -12,6 +13,15 @@ const app = {
   battle: null,
   input: "",
 };
+
+const esc = (s) =>
+  String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        c
+      ],
+  );
 
 const $ = (sel) => document.querySelector(sel);
 function show(id) {
@@ -52,6 +62,102 @@ function renderProfile() {
     }),
   );
   show("#screen-profile");
+  attachParentGear();
+}
+
+function attachParentGear() {
+  if ($("#screen-profile .parent-gear")) return; // 二重付与防止
+  const gear = document.createElement("div");
+  gear.textContent = "⚙";
+  gear.className = "parent-gear";
+  let timer = null;
+  const start = () => {
+    timer = setTimeout(openParentGate, 900);
+  };
+  const cancel = () => clearTimeout(timer);
+  gear.addEventListener("touchstart", start);
+  gear.addEventListener("mousedown", start);
+  ["touchend", "touchcancel", "mouseup", "mouseleave"].forEach((e) =>
+    gear.addEventListener(e, cancel),
+  );
+  $("#screen-profile").appendChild(gear);
+}
+
+function openParentGate() {
+  const pin = app.state.settings.pin;
+  $("#screen-parent").innerHTML = pin
+    ? `<h1>おうちの人ページ</h1><div class="card">PINを いれてください</div>
+       <input id="pin-in" class="pin" inputmode="numeric" maxlength="4" />
+       <button id="pin-ok">かくにん</button><button id="pin-cancel" class="secondary">もどる</button>
+       <div id="pin-msg"></div>`
+    : `<h1>おうちの人ページ</h1><div class="card">はじめに 4けたのPINを きめてください</div>
+       <input id="pin-set" class="pin" inputmode="numeric" maxlength="4" />
+       <button id="pin-save">せってい</button><button id="pin-cancel" class="secondary">もどる</button>`;
+  show("#screen-parent");
+  $("#pin-cancel").addEventListener("click", renderProfile);
+  if (pin) {
+    $("#pin-ok").addEventListener("click", () => {
+      if ($("#pin-in").value === pin) renderParentDash();
+      else $("#pin-msg").textContent = "PINが ちがいます";
+    });
+  } else {
+    $("#pin-save").addEventListener("click", () => {
+      const v = $("#pin-set").value;
+      if (/^\d{4}$/.test(v)) {
+        app.state.settings.pin = v;
+        save(localStorage, app.state);
+        renderParentDash();
+      }
+    });
+  }
+}
+
+function renderParentDash() {
+  const rows = app.state.profiles
+    .map((p) => {
+      const pr = app.state.progress[p.id];
+      const top =
+        weaknessTop(app.state.attempts, p.id, 5)
+          .map(
+            (t) =>
+              `${esc(t.skillTag)} ${Math.round(t.rate * 100)}%(${t.tries})`,
+          )
+          .join("<br>") || "きろく なし";
+      return `<div class="card"><b>${esc(p.avatar)} ${esc(p.nickname)}</b>
+      <div>れんぞく ${pr.streak}日 / セッション ${pr.sessions} / ずかん ${pr.monsters.length}</div>
+      <div style="margin-top:6px"><b>にがて トップ5</b><br>${top}</div></div>`;
+    })
+    .join("");
+  $("#screen-parent").innerHTML = `
+    <h1>おうちの人ページ</h1>${rows}
+    <button id="p-export">きろくを 書き出す</button>
+    <textarea id="p-export-area" class="export" readonly></textarea>
+    <button id="p-pin" class="secondary">PINを かえる</button>
+    <button id="p-reset" class="secondary">きろくを リセット</button>
+    <button id="p-back" class="secondary">もどる</button>`;
+  $("#p-export").addEventListener("click", () => {
+    const { settings, ...rest } = app.state;
+    const safe = {
+      ...rest,
+      settings: { ...settings, pin: settings.pin ? "****" : null },
+    };
+    $("#p-export-area").value = JSON.stringify(safe, null, 2);
+    $("#p-export-area").select();
+  });
+  $("#p-pin").addEventListener("click", () => {
+    app.state.settings.pin = null;
+    save(localStorage, app.state);
+    openParentGate();
+  });
+  $("#p-reset").addEventListener("click", () => {
+    if (confirm("すべての きろくを けします。よいですか?")) {
+      localStorage.removeItem(STORAGE_KEY);
+      app.state = load(localStorage);
+      renderProfile();
+    }
+  });
+  $("#p-back").addEventListener("click", renderProfile);
+  show("#screen-parent");
 }
 
 function renderHome() {
@@ -63,14 +169,32 @@ function renderHome() {
     <button id="btn-zukan" class="secondary">📖 モンスターずかん</button>
     <button id="btn-back" class="secondary">👤 プレイヤーをかえる</button>
   `;
-  $("#btn-battle").addEventListener("click", startBattle);
+  $("#btn-battle").addEventListener("click", renderSubject);
   $("#btn-zukan").addEventListener("click", renderZukan);
   $("#btn-back").addEventListener("click", renderProfile);
   show("#screen-home");
 }
 
-function startBattle() {
-  const questions = generateSession(profile().grade, 10);
+function renderSubject() {
+  $("#screen-subject").innerHTML = `
+    <h1>きょうか を えらぶ</h1>
+    <button id="sub-math">➗ さんすう</button>
+    <button id="sub-kanji" class="secondary">✏️ かんじ</button>
+    <button id="sub-back" class="secondary">もどる</button>
+  `;
+  $("#sub-math").addEventListener("click", () => startBattle("math"));
+  $("#sub-kanji").addEventListener("click", () => startBattle("kanji"));
+  $("#sub-back").addEventListener("click", renderHome);
+  show("#screen-subject");
+}
+
+function startBattle(subject = "math") {
+  const questions = buildSession(profile().grade, subject, {
+    count: 10,
+    attempts: app.state.attempts,
+    profileId: app.profileId,
+  });
+  app.subject = subject;
   const monster = pickEncounter(MONSTERS);
   app.battle = createBattle(questions, monster);
   app.input = "";
@@ -81,6 +205,16 @@ function startBattle() {
 function renderQuestion() {
   const b = app.battle;
   const qn = b.questions[b.index];
+  const answerArea = qn.choices
+    ? `<div class="choices">${qn.choices
+        .map((c) => `<button class="choice" data-c="${c}">${c}</button>`)
+        .join("")}</div>`
+    : `<div class="answer-display" id="ans"></div>
+       <div class="keypad">
+         ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `<button data-k="${n}">${n}</button>`).join("")}
+         <button data-k="del">⌫</button><button data-k="0">0</button>
+         <button data-k="ok" class="ok">こたえる!</button>
+       </div>`;
   $("#screen-battle").innerHTML = `
     <div class="enemy card">
       <div>やせいの <b>${b.monster.name}</b> が あらわれた!</div>
@@ -89,20 +223,23 @@ function renderQuestion() {
       <div>だい ${b.index + 1} もん / ${b.questions.length}</div>
     </div>
     <div class="qtext">${qn.text}</div>
-    <div class="answer-display" id="ans"></div>
-    <div class="keypad">
-      ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `<button data-k="${n}">${n}</button>`).join("")}
-      <button data-k="del">⌫</button>
-      <button data-k="0">0</button>
-      <button data-k="ok" class="ok">こたえる!</button>
-    </div>
+    ${answerArea}
   `;
-  document
-    .querySelectorAll(".keypad button")
-    .forEach((btn) =>
-      btn.addEventListener("click", () => onKey(btn.dataset.k)),
+  if (qn.choices) {
+    document.querySelectorAll(".choice").forEach((btn) =>
+      btn.addEventListener("click", () => {
+        app.input = btn.dataset.c;
+        submitAnswer();
+      }),
     );
-  updateAnswerDisplay();
+  } else {
+    document
+      .querySelectorAll(".keypad button")
+      .forEach((btn) =>
+        btn.addEventListener("click", () => onKey(btn.dataset.k)),
+      );
+    updateAnswerDisplay();
+  }
 }
 
 function updateAnswerDisplay() {
@@ -133,7 +270,7 @@ function submitAnswer() {
   const fb = document.createElement("div");
   fb.className = "feedback";
   fb.innerHTML = correct
-    ? `<div class="mark">⭕</div><div>こうげき せいこう! ${question.text.replace("?", question.answer)}</div>
+    ? `<div class="mark">⭕</div><div>せいかい! ${question.choices ? `こたえは ${question.answer}` : question.text.replace("?", question.answer)}</div>
        <button id="fb-next">つぎへ ▶</button>`
     : `<div class="mark">❌</div><div>こたえは <b>${question.answer}</b></div>
        <div class="explain">💡 ${question.explanation}</div>

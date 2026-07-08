@@ -16,7 +16,10 @@ export function createBattle(questions, monster) {
 export function answer(battle, value) {
   if (battle.finished) return { battle, correct: false, question: null };
   const question = battle.questions[battle.index];
-  const correct = Number(value) === question.answer;
+  const correct =
+    question.choices != null
+      ? value === question.answer
+      : Number(value) === question.answer;
   const next = {
     ...battle,
     index: battle.index + 1,
