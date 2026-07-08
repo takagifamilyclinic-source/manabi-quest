@@ -34,7 +34,19 @@ export function load(storage) {
     const raw = storage.getItem(STORAGE_KEY);
     if (!raw) return defaultState();
     const s = JSON.parse(raw);
-    return s && s.version === SCHEMA_VERSION ? s : defaultState();
+    if (!s || typeof s !== "object") return defaultState();
+    if (s.version === SCHEMA_VERSION) return s;
+    // v2(4学年プロフィール構造)は settings を足して v3 へ移行し、こどもの進捗を保持する
+    if (
+      s.version === 2 &&
+      Array.isArray(s.profiles) &&
+      s.progress &&
+      Array.isArray(s.attempts)
+    ) {
+      return { ...s, version: SCHEMA_VERSION, settings: { pin: null } };
+    }
+    // それ以外(v1・破損)は安全側でデフォルトにリセット
+    return defaultState();
   } catch {
     return defaultState();
   }
