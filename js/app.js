@@ -270,7 +270,7 @@ function submitAnswer() {
   const fb = document.createElement("div");
   fb.className = "feedback";
   fb.innerHTML = correct
-    ? `<div class="mark">⭕</div><div>せいかい! こたえは ${question.answer}</div>
+    ? `<div class="mark">⭕</div><div>せいかい! ${question.choices ? `こたえは ${question.answer}` : question.text.replace("?", question.answer)}</div>
        <button id="fb-next">つぎへ ▶</button>`
     : `<div class="mark">❌</div><div>こたえは <b>${question.answer}</b></div>
        <div class="explain">💡 ${question.explanation}</div>
