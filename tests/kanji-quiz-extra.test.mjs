@@ -40,3 +40,33 @@ test("部首・筆順問題: choices4つ・正解含む・重複なし", () => {
     }
   }
 });
+
+test("意味問題: ダミーに『正解と同じ意味の別字』が混ざらない(正解一意)・g1/g2", () => {
+  for (const g of [1, 2]) {
+    for (let i = 0; i < 500; i++) {
+      const q = makeKanjiQuestion(`kanji-mean-g${g}`);
+      // answer 以外の choices は answer と異なる文字列であること(同義でも値が違えば別選択肢)
+      const dupes = q.choices.filter((c) => c === q.answer);
+      assert.equal(dupes.length, 1, `${g}年 意味「${q.answer}」で正解が重複`);
+    }
+  }
+});
+
+test("部首問題: choices内に正解の部首値が1つだけ(正解一意)・g1/g2", () => {
+  for (const g of [1, 2]) {
+    for (let i = 0; i < 500; i++) {
+      const q = makeKanjiQuestion(`kanji-radical-g${g}`);
+      const dupes = q.choices.filter((c) => c === q.answer);
+      assert.equal(dupes.length, 1, `${g}年 部首「${q.answer}」で正解が重複`);
+    }
+  }
+});
+
+test("意味問題(g2)も4択・正解含む(mean-g2カバレッジ)", () => {
+  for (let i = 0; i < 300; i++) {
+    const q = makeKanjiQuestion("kanji-mean-g2");
+    assert.equal(q.choices.length, 4);
+    assert.equal(new Set(q.choices).size, 4);
+    assert.ok(q.choices.includes(q.answer));
+  }
+});
