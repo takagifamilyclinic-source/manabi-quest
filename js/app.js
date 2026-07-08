@@ -63,10 +63,23 @@ function renderHome() {
     <button id="btn-zukan" class="secondary">📖 モンスターずかん</button>
     <button id="btn-back" class="secondary">👤 プレイヤーをかえる</button>
   `;
-  $("#btn-battle").addEventListener("click", () => startBattle());
+  $("#btn-battle").addEventListener("click", renderSubject);
   $("#btn-zukan").addEventListener("click", renderZukan);
   $("#btn-back").addEventListener("click", renderProfile);
   show("#screen-home");
+}
+
+function renderSubject() {
+  $("#screen-subject").innerHTML = `
+    <h1>きょうか を えらぶ</h1>
+    <button id="sub-math">➗ さんすう</button>
+    <button id="sub-kanji" class="secondary">✏️ かんじ</button>
+    <button id="sub-back" class="secondary">もどる</button>
+  `;
+  $("#sub-math").addEventListener("click", () => startBattle("math"));
+  $("#sub-kanji").addEventListener("click", () => startBattle("kanji"));
+  $("#sub-back").addEventListener("click", renderHome);
+  show("#screen-subject");
 }
 
 function startBattle(subject = "math") {
@@ -86,6 +99,16 @@ function startBattle(subject = "math") {
 function renderQuestion() {
   const b = app.battle;
   const qn = b.questions[b.index];
+  const answerArea = qn.choices
+    ? `<div class="choices">${qn.choices
+        .map((c) => `<button class="choice" data-c="${c}">${c}</button>`)
+        .join("")}</div>`
+    : `<div class="answer-display" id="ans"></div>
+       <div class="keypad">
+         ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `<button data-k="${n}">${n}</button>`).join("")}
+         <button data-k="del">⌫</button><button data-k="0">0</button>
+         <button data-k="ok" class="ok">こたえる!</button>
+       </div>`;
   $("#screen-battle").innerHTML = `
     <div class="enemy card">
       <div>やせいの <b>${b.monster.name}</b> が あらわれた!</div>
@@ -94,20 +117,23 @@ function renderQuestion() {
       <div>だい ${b.index + 1} もん / ${b.questions.length}</div>
     </div>
     <div class="qtext">${qn.text}</div>
-    <div class="answer-display" id="ans"></div>
-    <div class="keypad">
-      ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `<button data-k="${n}">${n}</button>`).join("")}
-      <button data-k="del">⌫</button>
-      <button data-k="0">0</button>
-      <button data-k="ok" class="ok">こたえる!</button>
-    </div>
+    ${answerArea}
   `;
-  document
-    .querySelectorAll(".keypad button")
-    .forEach((btn) =>
-      btn.addEventListener("click", () => onKey(btn.dataset.k)),
+  if (qn.choices) {
+    document.querySelectorAll(".choice").forEach((btn) =>
+      btn.addEventListener("click", () => {
+        app.input = btn.dataset.c;
+        submitAnswer();
+      }),
     );
-  updateAnswerDisplay();
+  } else {
+    document
+      .querySelectorAll(".keypad button")
+      .forEach((btn) =>
+        btn.addEventListener("click", () => onKey(btn.dataset.k)),
+      );
+    updateAnswerDisplay();
+  }
 }
 
 function updateAnswerDisplay() {
@@ -138,7 +164,7 @@ function submitAnswer() {
   const fb = document.createElement("div");
   fb.className = "feedback";
   fb.innerHTML = correct
-    ? `<div class="mark">⭕</div><div>こうげき せいこう! ${question.text.replace("?", question.answer)}</div>
+    ? `<div class="mark">⭕</div><div>せいかい! こたえは ${question.answer}</div>
        <button id="fb-next">つぎへ ▶</button>`
     : `<div class="mark">❌</div><div>こたえは <b>${question.answer}</b></div>
        <div class="explain">💡 ${question.explanation}</div>

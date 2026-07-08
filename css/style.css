@@ -133,6 +133,15 @@ button.secondary {
   background: linear-gradient(#8effa0, #27c447);
   box-shadow: 0 4px 0 #17812d;
 }
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.choices .choice {
+  font-size: 1.8rem;
+  min-height: 72px;
+}
 .feedback {
   position: fixed;
   inset: 0;
