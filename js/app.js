@@ -12,7 +12,12 @@ import {
 import { todayString } from "./streak.js";
 import { MONSTERS } from "../data/monsters.js";
 import { weaknessTop } from "./weakness.js";
-import { levelFromXp, ownedCount, sessionGain } from "./progress-calc.js";
+import {
+  levelFromXp,
+  ownedCount,
+  sessionGain,
+  isEvolved,
+} from "./progress-calc.js";
 
 const app = {
   state: load(localStorage),
@@ -41,6 +46,13 @@ function face(m, cls = "face") {
   return m.img
     ? `<img class="monster-img" src="${m.img}" alt="${m.name}">`
     : `<span class="${cls}">${m.emoji}</span>`;
+}
+// 進化していれば進化後の名前・画像に差し替えた表示用オブジェクトを返す。
+// evolveImg が null の間は emoji にフォールバック(face が自動判定)。
+function viewOf(m, captures) {
+  return isEvolved(captures, m.id)
+    ? { ...m, name: m.evolveName, img: m.evolveImg }
+    : m;
 }
 function profile() {
   return app.state.profiles.find((p) => p.id === app.profileId);
@@ -370,13 +382,22 @@ function finishBattle() {
   const b = app.battle;
   const before = progress().streak;
   const gain = sessionGain(b);
+  const beforeEvolved = isEvolved(progress().captures, b.monster.id);
   app.state = recordSession(app.state, app.profileId, b, todayString());
   save(localStorage, app.state);
   const after = progress().streak;
-  const owned = ownedCount(progress().captures);
+  const captures = progress().captures;
+  const owned = ownedCount(captures);
+  const afterEvolved = isEvolved(captures, b.monster.id);
+  const justEvolved = !beforeEvolved && afterEvolved;
+  const view = viewOf(b.monster, captures);
   $("#screen-result").innerHTML = `
-    <div class="get-title">🎉 ${b.monster.name} を ゲット!</div>
-    <div class="big-face">${face(b.monster)}</div>
+    <div class="get-title ${justEvolved ? "evolve" : ""}">${
+      justEvolved
+        ? `🎉✨ ${b.monster.name} が ${b.monster.evolveName} に しんか!`
+        : `🎉 ${view.name} を ゲット!`
+    }</div>
+    <div class="big-face">${face(view)}</div>
     <div class="card">
       <div><span class="type-badge">${b.monster.type}</span> レアど: ${b.monster.rarity}</div>
       <div style="margin-top:8px">💡 ${b.monster.trivia}</div>
@@ -397,12 +418,16 @@ function renderZukan() {
   $("#screen-zukan").innerHTML = `
     <h1>📖 モンスターずかん (${ownedCount(captures)}/${MONSTERS.length})</h1>
     <div class="zukan-grid">
-      ${MONSTERS.map(
-        (m) => `
-        <div class="zukan-cell rar-${m.rarity} ${owns(m.id) ? "" : "unowned"}" data-id="${m.id}">
-          ${face(m)}<div>${owns(m.id) ? m.name : "???"}</div>
-        </div>`,
-      ).join("")}
+      ${MONSTERS.map((m) => {
+        const owned = owns(m.id);
+        const v = owned ? viewOf(m, captures) : m;
+        const cnt = captures[m.id] || 0;
+        return `
+        <div class="zukan-cell rar-${m.rarity} ${owned ? "" : "unowned"}" data-id="${m.id}">
+          ${face(v)}<div>${owned ? v.name : "???"}</div>
+          ${owned ? `<div class="cap-count">×${cnt}</div>` : ""}
+        </div>`;
+      }).join("")}
     </div>
     <div class="card" id="zukan-detail">モンスターを タップすると せつめいが 見られるよ</div>
     <button id="btn-home2" class="secondary">ホームへ もどる</button>
@@ -410,9 +435,15 @@ function renderZukan() {
   document.querySelectorAll(".zukan-cell").forEach((c) =>
     c.addEventListener("click", () => {
       const m = MONSTERS.find((x) => x.id === c.dataset.id);
-      $("#zukan-detail").innerHTML = owns(m.id)
-        ? `<b>${m.name}</b> <span class="type-badge">${m.type}</span> (${m.rarity})<br>💡 ${m.trivia}`
-        : `??? まだ つかまえていないよ`;
+      if (!owns(m.id)) {
+        $("#zukan-detail").innerHTML = `??? まだ つかまえていないよ`;
+        return;
+      }
+      const v = viewOf(m, captures);
+      const evolved = isEvolved(captures, m.id);
+      $("#zukan-detail").innerHTML =
+        `<b>${v.name}</b> <span class="type-badge">${m.type}</span> (${m.rarity})${evolved ? " ✨しんか!" : ""}` +
+        `<br>💡 ${m.trivia}<br>つかまえた かず: ${captures[m.id]}`;
     }),
   );
   $("#btn-home2").addEventListener("click", renderHome);

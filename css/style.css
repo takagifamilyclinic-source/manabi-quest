@@ -215,6 +215,26 @@ button.secondary {
     transform: scale(1);
   }
 }
+.get-title.evolve {
+  color: #ffd86b;
+  animation:
+    pop 0.5s,
+    glow 1.2s ease-in-out infinite alternate;
+}
+@keyframes glow {
+  from {
+    text-shadow: 0 0 6px #ffd86b;
+  }
+  to {
+    text-shadow:
+      0 0 18px #ff9f1c,
+      0 0 30px #ffd86b;
+  }
+}
+.cap-count {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
 .big-face {
   font-size: 7rem;
   text-align: center;
