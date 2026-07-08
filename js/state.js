@@ -59,22 +59,62 @@ export function defaultState() {
   };
 }
 
+function migrateV2toV3(s) {
+  return { ...s, version: 3, settings: { pin: null } };
+}
+
+function migrateV3toV4(s) {
+  const progress = {};
+  for (const [pid, pr] of Object.entries(s.progress)) {
+    const captures = {};
+    for (const id of pr.monsters || []) captures[id] = 1;
+    const { monsters, ...rest } = pr;
+    progress[pid] = {
+      ...rest,
+      captures,
+      xp: rest.xp ?? 0,
+      points: rest.points ?? 0,
+    };
+  }
+  return {
+    ...s,
+    version: 4,
+    progress,
+    settings: {
+      ...(s.settings || { pin: null }),
+      rewards: s.settings?.rewards ?? [],
+      rewardLog: s.settings?.rewardLog ?? [],
+    },
+  };
+}
+
 export function load(storage) {
   try {
     const raw = storage.getItem(STORAGE_KEY);
     if (!raw) return defaultState();
-    const s = JSON.parse(raw);
+    let s = JSON.parse(raw);
     if (!s || typeof s !== "object") return defaultState();
     if (s.version === SCHEMA_VERSION) return s;
-    // v2(4学年プロフィール構造)は settings を足して v3 へ移行し、こどもの進捗を保持する
+    // v2 → v3 移行：settings 追加
     if (
       s.version === 2 &&
       Array.isArray(s.profiles) &&
       s.progress &&
       Array.isArray(s.attempts)
     ) {
-      return { ...s, version: SCHEMA_VERSION, settings: { pin: null } };
+      s = migrateV2toV3(s);
     }
+    // v3 → v4 移行：monsters → captures、xp/points、rewards 追加
+    if (
+      s.version === 3 &&
+      Array.isArray(s.profiles) &&
+      s.progress &&
+      Array.isArray(s.attempts)
+    ) {
+      s = migrateV3toV4(s);
+    }
+    // v4 に到達したなら返す
+    if (s.version === SCHEMA_VERSION) return s;
     // それ以外(v1・破損)は安全側でデフォルトにリセット
     return defaultState();
   } catch {
