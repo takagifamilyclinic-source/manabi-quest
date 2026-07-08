@@ -6,6 +6,7 @@ import { load, save, recordSession, STORAGE_KEY } from "./state.js";
 import { todayString } from "./streak.js";
 import { MONSTERS } from "../data/monsters.js";
 import { weaknessTop } from "./weakness.js";
+import { levelFromXp, ownedCount, sessionGain } from "./progress-calc.js";
 
 const app = {
   state: load(localStorage),
@@ -124,7 +125,7 @@ function renderParentDash() {
           )
           .join("<br>") || "きろく なし";
       return `<div class="card"><b>${esc(p.avatar)} ${esc(p.nickname)}</b>
-      <div>れんぞく ${pr.streak}日 / セッション ${pr.sessions} / ずかん ${pr.monsters.length}</div>
+      <div>れんぞく ${pr.streak}日 / セッション ${pr.sessions} / ずかん ${ownedCount(pr.captures)}</div>
       <div style="margin-top:6px"><b>にがて トップ5</b><br>${top}</div></div>`;
     })
     .join("");
@@ -162,9 +163,13 @@ function renderParentDash() {
 
 function renderHome() {
   const prog = progress();
+  const lv = levelFromXp(prog.xp);
   $("#screen-home").innerHTML = `
     <h1>${profile().avatar} ${profile().nickname}</h1>
-    <div class="card streak">🔥 れんぞく <b>${prog.streak}</b> 日 / ずかん <b>${prog.monsters.length}</b>/${MONSTERS.length}</div>
+    <div class="card streak">🔥 れんぞく <b>${prog.streak}</b> 日 / ずかん <b>${ownedCount(prog.captures)}</b>/${MONSTERS.length}</div>
+    <div class="card streak">⭐ Lv <b>${lv.level}</b>
+      <div class="xpbar"><div style="width:${(lv.inLevel / lv.need) * 100}%"></div></div>
+      🪙 ポイント <b>${prog.points}</b></div>
     <button id="btn-battle">⚔️ バトルに でかける</button>
     <button id="btn-zukan" class="secondary">📖 モンスターずかん</button>
     <button id="btn-back" class="secondary">👤 プレイヤーをかえる</button>
@@ -286,10 +291,11 @@ function submitAnswer() {
 function finishBattle() {
   const b = app.battle;
   const before = progress().streak;
+  const gain = sessionGain(b);
   app.state = recordSession(app.state, app.profileId, b, todayString());
   save(localStorage, app.state);
   const after = progress().streak;
-  const owned = progress().monsters;
+  const owned = ownedCount(progress().captures);
   $("#screen-result").innerHTML = `
     <div class="get-title">🎉 ${b.monster.name} を ゲット!</div>
     <div class="big-face">${face(b.monster)}</div>
@@ -299,7 +305,8 @@ function finishBattle() {
     </div>
     <div class="card streak">せいかい ${b.correctCount}/${b.questions.length} もん
       ${after > before ? `<br>🔥 れんぞく ${after} 日に なった!` : ""}
-      <br>📖 ずかん ${owned.length}/${MONSTERS.length}</div>
+      <br>📖 ずかん ${owned}/${MONSTERS.length}
+      <br>⭐ +${gain.xp}XP / 🪙 +${gain.points}ポイント</div>
     <button id="btn-home">ホームへ もどる</button>
   `;
   $("#btn-home").addEventListener("click", renderHome);
@@ -307,14 +314,15 @@ function finishBattle() {
 }
 
 function renderZukan() {
-  const owned = new Set(progress().monsters);
+  const captures = progress().captures;
+  const owns = (id) => (captures[id] || 0) > 0;
   $("#screen-zukan").innerHTML = `
-    <h1>📖 モンスターずかん (${owned.size}/${MONSTERS.length})</h1>
+    <h1>📖 モンスターずかん (${ownedCount(captures)}/${MONSTERS.length})</h1>
     <div class="zukan-grid">
       ${MONSTERS.map(
         (m) => `
-        <div class="zukan-cell rar-${m.rarity} ${owned.has(m.id) ? "" : "unowned"}" data-id="${m.id}">
-          ${face(m)}<div>${owned.has(m.id) ? m.name : "???"}</div>
+        <div class="zukan-cell rar-${m.rarity} ${owns(m.id) ? "" : "unowned"}" data-id="${m.id}">
+          ${face(m)}<div>${owns(m.id) ? m.name : "???"}</div>
         </div>`,
       ).join("")}
     </div>
@@ -324,7 +332,7 @@ function renderZukan() {
   document.querySelectorAll(".zukan-cell").forEach((c) =>
     c.addEventListener("click", () => {
       const m = MONSTERS.find((x) => x.id === c.dataset.id);
-      $("#zukan-detail").innerHTML = owned.has(m.id)
+      $("#zukan-detail").innerHTML = owns(m.id)
         ? `<b>${m.name}</b> <span class="type-badge">${m.type}</span> (${m.rarity})<br>💡 ${m.trivia}`
         : `??? まだ つかまえていないよ`;
     }),
