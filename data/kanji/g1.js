@@ -28,7 +28,7 @@ export const KANJI_G1 = [
     grade: 1,
     yomi: ["えん", "まる"],
     meaning: "えん(おかね)",
-    radical: "囗",
+    radical: "冂",
     strokes: 4,
   },
   {
