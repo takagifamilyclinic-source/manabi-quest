@@ -14,8 +14,21 @@ test("g1のスキルに意味・部首・筆順が含まれる", () => {
   for (const t of ["kanji-mean-g1", "kanji-radical-g1", "kanji-stroke-g1"])
     assert.ok(s.includes(t));
 });
-test("g3は読み書きのみ(意味部首筆順を含まない)", () => {
-  assert.deepEqual(kanjiSkills(3), ["kanji-read-g3", "kanji-write-g3"]);
+test("g3/g4も全5形式を含む", () => {
+  assert.deepEqual(kanjiSkills(3), [
+    "kanji-read-g3",
+    "kanji-write-g3",
+    "kanji-mean-g3",
+    "kanji-radical-g3",
+    "kanji-stroke-g3",
+  ]);
+  assert.deepEqual(kanjiSkills(4), [
+    "kanji-read-g4",
+    "kanji-write-g4",
+    "kanji-mean-g4",
+    "kanji-radical-g4",
+    "kanji-stroke-g4",
+  ]);
 });
 test("意味問題: choices4つ・正解含む・重複なし", () => {
   for (let i = 0; i < 300; i++) {
@@ -68,5 +81,23 @@ test("意味問題(g2)も4択・正解含む(mean-g2カバレッジ)", () => {
     assert.equal(q.choices.length, 4);
     assert.equal(new Set(q.choices).size, 4);
     assert.ok(q.choices.includes(q.answer));
+  }
+});
+
+test("g3/g4の意味・部首・画数問題: 4択・正解含有・重複なし", () => {
+  for (const tag of [
+    "kanji-mean-g3",
+    "kanji-radical-g3",
+    "kanji-stroke-g3",
+    "kanji-mean-g4",
+    "kanji-radical-g4",
+    "kanji-stroke-g4",
+  ]) {
+    for (let i = 0; i < 200; i++) {
+      const q = makeKanjiQuestion(tag);
+      assert.equal(q.choices.length, 4, `${tag} choices at ${i}`);
+      assert.ok(q.choices.includes(q.answer), `${tag} answer missing at ${i}`);
+      assert.equal(new Set(q.choices).size, 4, `${tag} dup at ${i}`);
+    }
   }
 });
