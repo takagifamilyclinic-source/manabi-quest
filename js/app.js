@@ -7,8 +7,16 @@ import {
   save,
   recordSession,
   exchangeReward,
+  setTitle,
   STORAGE_KEY,
 } from "./state.js";
+import {
+  BADGES,
+  badgeContext,
+  badgeStatus,
+  earnedBadges,
+  newBadges,
+} from "./badges.js";
 import { todayString } from "./streak.js";
 import { MONSTERS } from "../data/monsters.js";
 import { weaknessTop } from "./weakness.js";
@@ -18,6 +26,8 @@ import {
   sessionGain,
   isEvolved,
 } from "./progress-calc.js";
+
+const MONSTER_IDS = MONSTERS.map((m) => m.id);
 
 const app = {
   state: load(localStorage),
@@ -252,22 +262,70 @@ function renderParentDash() {
 function renderHome() {
   const prog = progress();
   const lv = levelFromXp(prog.xp);
+  const titleBadge = BADGES.find((b) => b.id === prog.title);
   $("#screen-home").innerHTML = `
-    <h1>${profile().avatar} ${profile().nickname}</h1>
+    <h1>${profile().avatar} ${profile().nickname}${
+      titleBadge
+        ? ` <span class="title-chip">${titleBadge.emoji} ${titleBadge.name}</span>`
+        : ""
+    }</h1>
     <div class="card streak">🔥 れんぞく <b>${prog.streak}</b> 日 / ずかん <b>${ownedCount(prog.captures)}</b>/${MONSTERS.length}</div>
     <div class="card streak">⭐ Lv <b>${lv.level}</b>
       <div class="xpbar"><div style="width:${(lv.inLevel / lv.need) * 100}%"></div></div>
       🪙 ポイント <b>${prog.points}</b></div>
     <button id="btn-battle">⚔️ バトルに でかける</button>
     <button id="btn-zukan" class="secondary">📖 モンスターずかん</button>
+    <button id="btn-badges" class="secondary">🏅 バッジちょう</button>
     <button id="btn-reward" class="secondary">🎁 ごほうび</button>
     <button id="btn-back" class="secondary">👤 プレイヤーをかえる</button>
   `;
   $("#btn-battle").addEventListener("click", renderSubject);
   $("#btn-zukan").addEventListener("click", renderZukan);
+  $("#btn-badges").addEventListener("click", renderBadges);
   $("#btn-reward").addEventListener("click", renderReward);
   $("#btn-back").addEventListener("click", renderProfile);
   show("#screen-home");
+}
+
+function renderBadges() {
+  const ctx = badgeContext(app.state, app.profileId, MONSTER_IDS);
+  const earned = earnedBadges(ctx);
+  const title = progress().title;
+  $("#screen-badges").innerHTML = `
+    <h1>🏅 バッジちょう (${earned.size}/${BADGES.length})</h1>
+    <div class="badge-grid">
+      ${BADGES.map((b) => {
+        const st = badgeStatus(b, ctx);
+        if (!st.earned)
+          return `<div class="badge-cell locked">
+            <div class="badge-icon">🔒</div>
+            <div class="badge-name">${b.name}</div>
+            <div class="badge-left">あと${st.target - st.current}${b.unit}</div>
+          </div>`;
+        const active = title === b.id;
+        return `<div class="badge-cell earned ${active ? "active" : ""}" data-id="${b.id}">
+          <div class="badge-icon">${b.emoji}</div>
+          <div class="badge-name">${b.name}</div>
+          <div class="badge-left">${active ? "そうびちゅう!" : "タップで しょうごうに"}</div>
+        </div>`;
+      }).join("")}
+    </div>
+    <button id="badge-back" class="secondary">もどる</button>
+  `;
+  document.querySelectorAll(".badge-cell.earned").forEach((c) =>
+    c.addEventListener("click", () => {
+      const id = c.dataset.id;
+      app.state = setTitle(
+        app.state,
+        app.profileId,
+        progress().title === id ? null : id,
+      );
+      save(localStorage, app.state);
+      renderBadges();
+    }),
+  );
+  $("#badge-back").addEventListener("click", renderHome);
+  show("#screen-badges");
 }
 
 function renderSubject() {
@@ -383,8 +441,15 @@ function finishBattle() {
   const before = progress().streak;
   const gain = sessionGain(b);
   const beforeEvolved = isEvolved(progress().captures, b.monster.id);
+  const beforeBadges = earnedBadges(
+    badgeContext(app.state, app.profileId, MONSTER_IDS),
+  );
   app.state = recordSession(app.state, app.profileId, b, todayString());
   save(localStorage, app.state);
+  const gotBadges = newBadges(
+    beforeBadges,
+    earnedBadges(badgeContext(app.state, app.profileId, MONSTER_IDS)),
+  );
   const after = progress().streak;
   const captures = progress().captures;
   const owned = ownedCount(captures);
@@ -402,6 +467,13 @@ function finishBattle() {
       <div><span class="type-badge">${b.monster.type}</span> レアど: ${b.monster.rarity}</div>
       <div style="margin-top:8px">💡 ${b.monster.trivia}</div>
     </div>
+    ${
+      gotBadges.length
+        ? `<div class="card badge-get">🏅 バッジかくとく!<br>${gotBadges
+            .map((b) => `<span class="badge-chip">${b.emoji} ${b.name}</span>`)
+            .join(" ")}</div>`
+        : ""
+    }
     <div class="card streak">せいかい ${b.correctCount}/${b.questions.length} もん
       ${after > before ? `<br>🔥 れんぞく ${after} 日に なった!` : ""}
       <br>📖 ずかん ${owned}/${MONSTERS.length}

@@ -319,3 +319,68 @@ button.secondary {
   font-size: 0.9rem;
   opacity: 0.85;
 }
+
+/* ===== バッジ(第5弾) ===== */
+.title-chip {
+  display: inline-block;
+  font-size: 0.5em;
+  background: #ffe9a8;
+  color: #1a2456;
+  border-radius: 999px;
+  padding: 2px 10px;
+  vertical-align: middle;
+}
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 12px 0;
+}
+.badge-cell {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 10px 6px;
+  text-align: center;
+  border: 2px solid transparent;
+}
+.badge-cell.locked {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+.badge-cell.active {
+  border-color: #f5a623;
+  box-shadow: 0 0 8px rgba(245, 166, 35, 0.6);
+}
+.badge-icon {
+  font-size: 34px;
+}
+.badge-name {
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 4px;
+}
+.badge-left {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 2px;
+}
+.badge-get {
+  animation: badgeglow 1s ease-in-out infinite alternate;
+}
+.badge-chip {
+  display: inline-block;
+  background: #fff3c4;
+  color: #1a2456;
+  border-radius: 999px;
+  padding: 2px 10px;
+  margin: 2px;
+  font-weight: bold;
+}
+@keyframes badgeglow {
+  from {
+    box-shadow: 0 0 4px rgba(245, 166, 35, 0.4);
+  }
+  to {
+    box-shadow: 0 0 16px rgba(245, 166, 35, 0.9);
+  }
+}
