@@ -1,5 +1,5 @@
 // キャッシュファーストのService Worker。更新時は CACHE のバージョンを上げる
-const CACHE = "manabi-quest-v1.5.0";
+const CACHE = "manabi-quest-v1.6.0";
 const ASSETS = [
   "./",
   "./index.html",
@@ -14,6 +14,7 @@ const ASSETS = [
   "./js/session.js",
   "./js/weakness.js",
   "./js/progress-calc.js",
+  "./js/badges.js",
   "./data/monsters.js",
   "./data/kanji/g1.js",
   "./data/kanji/g2.js",
