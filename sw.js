@@ -1,5 +1,5 @@
 // キャッシュファーストのService Worker。更新時は CACHE のバージョンを上げる
-const CACHE = "manabi-quest-v1.3.1";
+const CACHE = "manabi-quest-v1.4.0";
 const ASSETS = [
   "./",
   "./index.html",
@@ -13,6 +13,7 @@ const ASSETS = [
   "./js/kanji-quiz.js",
   "./js/session.js",
   "./js/weakness.js",
+  "./js/progress-calc.js",
   "./data/monsters.js",
   "./data/kanji/g1.js",
   "./data/kanji/g2.js",
@@ -42,6 +43,26 @@ const ASSETS = [
   "./assets/mon-yukibo.png",
   "./assets/mon-yukiusa.png",
   "./assets/mon-zundamaru.png",
+  "./assets/evo-akitan.png",
+  "./assets/evo-bondenkun.png",
+  "./assets/evo-chochinmaru.png",
+  "./assets/evo-chokaigan.png",
+  "./assets/evo-fubukimaru.png",
+  "./assets/evo-hatahatan.png",
+  "./assets/evo-iburin.png",
+  "./assets/evo-inaniwan.png",
+  "./assets/evo-kiritanpon.png",
+  "./assets/evo-kokeshimaru.png",
+  "./assets/evo-namahagen.png",
+  "./assets/evo-nebutaro.png",
+  "./assets/evo-ringoro.png",
+  "./assets/evo-sakuranbou.png",
+  "./assets/evo-shirakamin.png",
+  "./assets/evo-tazukohime.png",
+  "./assets/evo-yakisoban.png",
+  "./assets/evo-yukibo.png",
+  "./assets/evo-yukiusa.png",
+  "./assets/evo-zundamaru.png",
 ];
 
 self.addEventListener("install", (e) => {

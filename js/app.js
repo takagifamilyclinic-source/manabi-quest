@@ -2,10 +2,22 @@
 import { buildSession } from "./session.js";
 import { createBattle, answer } from "./battle.js";
 import { pickEncounter } from "./capture.js";
-import { load, save, recordSession, STORAGE_KEY } from "./state.js";
+import {
+  load,
+  save,
+  recordSession,
+  exchangeReward,
+  STORAGE_KEY,
+} from "./state.js";
 import { todayString } from "./streak.js";
 import { MONSTERS } from "../data/monsters.js";
 import { weaknessTop } from "./weakness.js";
+import {
+  levelFromXp,
+  ownedCount,
+  sessionGain,
+  isEvolved,
+} from "./progress-calc.js";
 
 const app = {
   state: load(localStorage),
@@ -34,6 +46,13 @@ function face(m, cls = "face") {
   return m.img
     ? `<img class="monster-img" src="${m.img}" alt="${m.name}">`
     : `<span class="${cls}">${m.emoji}</span>`;
+}
+// 進化していれば進化後の名前・画像に差し替えた表示用オブジェクトを返す。
+// evolveImg が null の間は emoji にフォールバック(face が自動判定)。
+function viewOf(m, captures) {
+  return isEvolved(captures, m.id)
+    ? { ...m, name: m.evolveName, img: m.evolveImg }
+    : m;
 }
 function profile() {
   return app.state.profiles.find((p) => p.id === app.profileId);
@@ -124,17 +143,87 @@ function renderParentDash() {
           )
           .join("<br>") || "きろく なし";
       return `<div class="card"><b>${esc(p.avatar)} ${esc(p.nickname)}</b>
-      <div>れんぞく ${pr.streak}日 / セッション ${pr.sessions} / ずかん ${pr.monsters.length}</div>
+      <div>れんぞく ${pr.streak}日 / セッション ${pr.sessions} / ずかん ${ownedCount(pr.captures)}</div>
       <div style="margin-top:6px"><b>にがて トップ5</b><br>${top}</div></div>`;
     })
     .join("");
+  const rewardRows =
+    app.state.settings.rewards
+      .map(
+        (r) => `<div class="rw-row">🎁 ${esc(r.name)} = ${r.cost}pt
+      <button class="rw-del secondary" data-id="${esc(r.id)}">けす</button></div>`,
+      )
+      .join("") || "まだ ありません";
+  const childOpts = app.state.profiles
+    .map(
+      (p) =>
+        `<option value="${p.id}">${esc(p.nickname)}(${app.state.progress[p.id].points}pt)</option>`,
+    )
+    .join("");
+  const rewardOpts = app.state.settings.rewards
+    .map(
+      (r) =>
+        `<option value="${esc(r.id)}">${esc(r.name)} (${r.cost}pt)</option>`,
+    )
+    .join("");
   $("#screen-parent").innerHTML = `
     <h1>おうちの人ページ</h1>${rows}
+    <div class="card"><b>🎁 ごほうび一覧</b>
+      <div class="rw-list">${rewardRows}</div>
+      <input id="rw-name" placeholder="なまえ (れい: アイス)" />
+      <input id="rw-cost" inputmode="numeric" placeholder="ひつような ポイント" />
+      <button id="rw-add">ついか</button></div>
+    <div class="card"><b>🪙 ごほうび交換</b>
+      <select id="ex-child">${childOpts}</select>
+      <select id="ex-reward">${rewardOpts}</select>
+      <button id="ex-do">こうかん</button>
+      <div id="ex-msg" class="ex-msg"></div></div>
     <button id="p-export">きろくを 書き出す</button>
     <textarea id="p-export-area" class="export" readonly></textarea>
     <button id="p-pin" class="secondary">PINを かえる</button>
     <button id="p-reset" class="secondary">きろくを リセット</button>
     <button id="p-back" class="secondary">もどる</button>`;
+  document.querySelectorAll(".rw-del").forEach((b) =>
+    b.addEventListener("click", () => {
+      app.state.settings.rewards = app.state.settings.rewards.filter(
+        (r) => r.id !== b.dataset.id,
+      );
+      save(localStorage, app.state);
+      renderParentDash();
+    }),
+  );
+  $("#rw-add").addEventListener("click", () => {
+    const name = $("#rw-name").value.trim();
+    const cost = parseInt($("#rw-cost").value, 10);
+    if (name && Number.isInteger(cost) && cost > 0) {
+      app.state.settings.rewards.push({
+        id: "r" + Date.now() + "-" + app.state.settings.rewards.length,
+        name,
+        cost,
+      });
+      save(localStorage, app.state);
+      renderParentDash();
+    }
+  });
+  $("#ex-do").addEventListener("click", () => {
+    const pid = $("#ex-child").value;
+    const reward = app.state.settings.rewards.find(
+      (r) => r.id === $("#ex-reward").value,
+    );
+    if (!reward) {
+      $("#ex-msg").textContent = "ごほうびを ついかしてね";
+      return;
+    }
+    const res = exchangeReward(app.state, pid, reward, todayString());
+    if (res.ok) {
+      app.state = res.state;
+      save(localStorage, app.state);
+      renderParentDash();
+      $("#ex-msg").textContent = `「${reward.name}」を こうかんしました`;
+    } else {
+      $("#ex-msg").textContent = "ポイントが たりません";
+    }
+  });
   $("#p-export").addEventListener("click", () => {
     const { settings, ...rest } = app.state;
     const safe = {
@@ -162,15 +251,21 @@ function renderParentDash() {
 
 function renderHome() {
   const prog = progress();
+  const lv = levelFromXp(prog.xp);
   $("#screen-home").innerHTML = `
     <h1>${profile().avatar} ${profile().nickname}</h1>
-    <div class="card streak">🔥 れんぞく <b>${prog.streak}</b> 日 / ずかん <b>${prog.monsters.length}</b>/${MONSTERS.length}</div>
+    <div class="card streak">🔥 れんぞく <b>${prog.streak}</b> 日 / ずかん <b>${ownedCount(prog.captures)}</b>/${MONSTERS.length}</div>
+    <div class="card streak">⭐ Lv <b>${lv.level}</b>
+      <div class="xpbar"><div style="width:${(lv.inLevel / lv.need) * 100}%"></div></div>
+      🪙 ポイント <b>${prog.points}</b></div>
     <button id="btn-battle">⚔️ バトルに でかける</button>
     <button id="btn-zukan" class="secondary">📖 モンスターずかん</button>
+    <button id="btn-reward" class="secondary">🎁 ごほうび</button>
     <button id="btn-back" class="secondary">👤 プレイヤーをかえる</button>
   `;
   $("#btn-battle").addEventListener("click", renderSubject);
   $("#btn-zukan").addEventListener("click", renderZukan);
+  $("#btn-reward").addEventListener("click", renderReward);
   $("#btn-back").addEventListener("click", renderProfile);
   show("#screen-home");
 }
@@ -286,20 +381,31 @@ function submitAnswer() {
 function finishBattle() {
   const b = app.battle;
   const before = progress().streak;
+  const gain = sessionGain(b);
+  const beforeEvolved = isEvolved(progress().captures, b.monster.id);
   app.state = recordSession(app.state, app.profileId, b, todayString());
   save(localStorage, app.state);
   const after = progress().streak;
-  const owned = progress().monsters;
+  const captures = progress().captures;
+  const owned = ownedCount(captures);
+  const afterEvolved = isEvolved(captures, b.monster.id);
+  const justEvolved = !beforeEvolved && afterEvolved;
+  const view = viewOf(b.monster, captures);
   $("#screen-result").innerHTML = `
-    <div class="get-title">🎉 ${b.monster.name} を ゲット!</div>
-    <div class="big-face">${face(b.monster)}</div>
+    <div class="get-title ${justEvolved ? "evolve" : ""}">${
+      justEvolved
+        ? `🎉✨ ${b.monster.name} が ${b.monster.evolveName} に しんか!`
+        : `🎉 ${view.name} を ゲット!`
+    }</div>
+    <div class="big-face">${face(view)}</div>
     <div class="card">
       <div><span class="type-badge">${b.monster.type}</span> レアど: ${b.monster.rarity}</div>
       <div style="margin-top:8px">💡 ${b.monster.trivia}</div>
     </div>
     <div class="card streak">せいかい ${b.correctCount}/${b.questions.length} もん
       ${after > before ? `<br>🔥 れんぞく ${after} 日に なった!` : ""}
-      <br>📖 ずかん ${owned.length}/${MONSTERS.length}</div>
+      <br>📖 ずかん ${owned}/${MONSTERS.length}
+      <br>⭐ +${gain.xp}XP / 🪙 +${gain.points}ポイント</div>
     <button id="btn-home">ホームへ もどる</button>
   `;
   $("#btn-home").addEventListener("click", renderHome);
@@ -307,16 +413,21 @@ function finishBattle() {
 }
 
 function renderZukan() {
-  const owned = new Set(progress().monsters);
+  const captures = progress().captures;
+  const owns = (id) => (captures[id] || 0) > 0;
   $("#screen-zukan").innerHTML = `
-    <h1>📖 モンスターずかん (${owned.size}/${MONSTERS.length})</h1>
+    <h1>📖 モンスターずかん (${ownedCount(captures)}/${MONSTERS.length})</h1>
     <div class="zukan-grid">
-      ${MONSTERS.map(
-        (m) => `
-        <div class="zukan-cell rar-${m.rarity} ${owned.has(m.id) ? "" : "unowned"}" data-id="${m.id}">
-          ${face(m)}<div>${owned.has(m.id) ? m.name : "???"}</div>
-        </div>`,
-      ).join("")}
+      ${MONSTERS.map((m) => {
+        const owned = owns(m.id);
+        const v = owned ? viewOf(m, captures) : m;
+        const cnt = captures[m.id] || 0;
+        return `
+        <div class="zukan-cell rar-${m.rarity} ${owned ? "" : "unowned"}" data-id="${m.id}">
+          ${face(v)}<div>${owned ? v.name : "???"}</div>
+          ${owned ? `<div class="cap-count">×${cnt}</div>` : ""}
+        </div>`;
+      }).join("")}
     </div>
     <div class="card" id="zukan-detail">モンスターを タップすると せつめいが 見られるよ</div>
     <button id="btn-home2" class="secondary">ホームへ もどる</button>
@@ -324,13 +435,41 @@ function renderZukan() {
   document.querySelectorAll(".zukan-cell").forEach((c) =>
     c.addEventListener("click", () => {
       const m = MONSTERS.find((x) => x.id === c.dataset.id);
-      $("#zukan-detail").innerHTML = owned.has(m.id)
-        ? `<b>${m.name}</b> <span class="type-badge">${m.type}</span> (${m.rarity})<br>💡 ${m.trivia}`
-        : `??? まだ つかまえていないよ`;
+      if (!owns(m.id)) {
+        $("#zukan-detail").innerHTML = `??? まだ つかまえていないよ`;
+        return;
+      }
+      const v = viewOf(m, captures);
+      const evolved = isEvolved(captures, m.id);
+      $("#zukan-detail").innerHTML =
+        `<b>${v.name}</b> <span class="type-badge">${m.type}</span> (${m.rarity})${evolved ? " ✨しんか!" : ""}` +
+        `<br>💡 ${m.trivia}<br>つかまえた かず: ${captures[m.id]}`;
     }),
   );
   $("#btn-home2").addEventListener("click", renderHome);
   show("#screen-zukan");
+}
+
+function renderReward() {
+  const prog = progress();
+  const rewards = app.state.settings.rewards;
+  const list =
+    rewards
+      .map((r) => {
+        const enough = prog.points >= r.cost;
+        return `<div class="rw-row ${enough ? "rw-ok" : ""}">🎁 ${esc(r.name)}
+          <b>${r.cost}pt</b> ${enough ? "✅ こうかんできる!" : ""}</div>`;
+      })
+      .join("") || `<div>まだ ごほうびが ありません</div>`;
+  $("#screen-reward").innerHTML = `
+    <h1>🎁 ごほうび</h1>
+    <div class="card streak">🪙 いまの ポイント <b>${prog.points}</b></div>
+    <div class="card">${list}</div>
+    <div class="card note">こうかんは おうちの人に おねがいしてね</div>
+    <button id="btn-home3" class="secondary">ホームへ もどる</button>
+  `;
+  $("#btn-home3").addEventListener("click", renderHome);
+  show("#screen-reward");
 }
 
 renderProfile();

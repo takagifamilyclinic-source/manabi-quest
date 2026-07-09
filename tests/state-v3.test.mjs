@@ -10,13 +10,17 @@ function mem() {
   };
 }
 
-test("defaultState は settings.pin=null・version3", () => {
+test("defaultState は settings.pin=null・version4・rewards", () => {
   const s = defaultState();
-  assert.equal(s.version, 3);
-  assert.deepEqual(s.settings, { pin: null });
+  assert.equal(s.version, 4);
+  assert.deepEqual(s.settings, {
+    pin: null,
+    rewards: [],
+    rewardLog: [],
+  });
 });
 
-test("v2データはv3へ移行され、こどもの進捗が保持される", () => {
+test("v2データはv4へ移行され、こどもの進捗が保持される(段階: v2→v3→v4)", () => {
   const st = mem();
   const v2 = {
     version: 2,
@@ -40,16 +44,16 @@ test("v2データはv3へ移行され、こどもの進捗が保持される", (
   };
   st.setItem("manabi-quest-v1", JSON.stringify(v2));
   const s = load(st);
-  assert.equal(s.version, 3);
-  assert.deepEqual(s.settings, { pin: null });
+  assert.equal(s.version, 4);
+  assert.deepEqual(s.settings, { pin: null, rewards: [], rewardLog: [] });
   assert.equal(s.progress.p1.streak, 7);
-  assert.deepEqual(s.progress.p1.monsters, ["yukibo", "akitan"]);
+  assert.deepEqual(s.progress.p1.captures, { yukibo: 1, akitan: 1 });
   assert.equal(s.attempts.length, 1);
 });
 
-test("v1(旧2プロフィール)や壊れた版はデフォルトへリセット", () => {
+test("v1(旧2プロフィール)や壊れた版はデフォルト(v4)へリセット", () => {
   const st = mem();
   st.setItem("manabi-quest-v1", JSON.stringify({ version: 1, foo: 1 }));
-  assert.equal(load(st).version, 3);
+  assert.equal(load(st).version, 4);
   assert.equal(load(st).profiles.length, 4);
 });
