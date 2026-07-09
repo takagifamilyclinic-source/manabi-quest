@@ -470,7 +470,9 @@ function finishBattle() {
     ${
       gotBadges.length
         ? `<div class="card badge-get">🏅 バッジかくとく!<br>${gotBadges
-            .map((b) => `<span class="badge-chip">${b.emoji} ${b.name}</span>`)
+            .map(
+              (bg) => `<span class="badge-chip">${bg.emoji} ${bg.name}</span>`,
+            )
             .join(" ")}</div>`
         : ""
     }

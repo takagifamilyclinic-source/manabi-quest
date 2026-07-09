@@ -38,7 +38,7 @@ test("load: 空ストレージなら defaultState", () => {
   assert.equal(s.version, 5);
 });
 
-test("load: 旧v1データ(gradeBand・2人)は安全にv4デフォルトへリセットされる", () => {
+test("load: 旧v1データ(gradeBand・2人)は安全にv5デフォルトへリセットされる", () => {
   const st = memStorage();
   const oldV1 = {
     version: 1,

@@ -20,7 +20,7 @@ test("defaultState は settings.pin=null・version5・rewards", () => {
   });
 });
 
-test("v2データはv4へ移行され、こどもの進捗が保持される(段階: v2→v3→v4)", () => {
+test("v2データはv5へ移行され、こどもの進捗が保持される(段階: v2→v3→v5)", () => {
   const st = mem();
   const v2 = {
     version: 2,
