@@ -9,7 +9,8 @@ export const STORAGE_KEY = "manabi-quest-v1";
 // (未公開のため実データ消失なし。将来の版上げ時は移行関数が必要=設計書TODO参照)。
 // v3: settings.pin 追加(ロック・アンロック機構用)。
 // v4: progress に xp/points/captures を追加(monsters削除)、settings に rewards/rewardLog追加。
-const SCHEMA_VERSION = 4;
+// v5: progress に bestStreak(最高連続日数)/title(称号バッジID) を追加。
+const SCHEMA_VERSION = 5;
 
 export function defaultState() {
   return {
@@ -28,6 +29,8 @@ export function defaultState() {
         sessions: 0,
         xp: 0,
         points: 0,
+        bestStreak: 0,
+        title: null,
       },
       p2: {
         streak: 0,
@@ -36,6 +39,8 @@ export function defaultState() {
         sessions: 0,
         xp: 0,
         points: 0,
+        bestStreak: 0,
+        title: null,
       },
       p3: {
         streak: 0,
@@ -44,6 +49,8 @@ export function defaultState() {
         sessions: 0,
         xp: 0,
         points: 0,
+        bestStreak: 0,
+        title: null,
       },
       p4: {
         streak: 0,
@@ -52,6 +59,8 @@ export function defaultState() {
         sessions: 0,
         xp: 0,
         points: 0,
+        bestStreak: 0,
+        title: null,
       },
     },
     attempts: [],
@@ -88,6 +97,18 @@ function migrateV3toV4(s) {
   };
 }
 
+function migrateV4toV5(s) {
+  const progress = {};
+  for (const [pid, pr] of Object.entries(s.progress)) {
+    progress[pid] = {
+      ...pr,
+      bestStreak: pr.bestStreak ?? pr.streak ?? 0,
+      title: pr.title ?? null,
+    };
+  }
+  return { ...s, version: 5, progress };
+}
+
 export function load(storage) {
   try {
     const raw = storage.getItem(STORAGE_KEY);
@@ -113,7 +134,16 @@ export function load(storage) {
     ) {
       s = migrateV3toV4(s);
     }
-    // v4 に到達したなら返す
+    // v4 → v5 移行：bestStreak / title 追加
+    if (
+      s.version === 4 &&
+      Array.isArray(s.profiles) &&
+      s.progress &&
+      Array.isArray(s.attempts)
+    ) {
+      s = migrateV4toV5(s);
+    }
+    // v5 に到達したなら返す
     if (s.version === SCHEMA_VERSION) return s;
     // それ以外(v1・破損)は安全側でデフォルトにリセット
     return defaultState();
@@ -129,13 +159,15 @@ export function save(storage, state) {
 export function recordSession(state, profileId, battle, todayStr) {
   const prog = state.progress[profileId];
   const gain = sessionGain(battle);
+  const st = updateStreak(prog, todayStr);
   return {
     ...state,
     progress: {
       ...state.progress,
       [profileId]: {
         ...prog,
-        ...updateStreak(prog, todayStr),
+        ...st,
+        bestStreak: Math.max(prog.bestStreak ?? 0, st.streak),
         captures: addCapture(prog.captures, battle.monster.id),
         sessions: prog.sessions + 1,
         xp: prog.xp + gain.xp,
@@ -174,6 +206,17 @@ export function exchangeReward(state, profileId, reward, dateStr) {
           { date: dateStr, profileId, name: reward.name, cost: reward.cost },
         ],
       },
+    },
+  };
+}
+
+// 称号の装着/解除。badgeId=null で外す。獲得済みかの検証は呼び出し側(UI)で行う。
+export function setTitle(state, profileId, badgeId) {
+  return {
+    ...state,
+    progress: {
+      ...state.progress,
+      [profileId]: { ...state.progress[profileId], title: badgeId },
     },
   };
 }

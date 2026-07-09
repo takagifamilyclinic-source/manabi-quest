@@ -2,9 +2,9 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { defaultState, recordSession } from "../js/state.js";
 
-test("defaultState v4: xp/points/captures と settings.rewards", () => {
+test("defaultState v5: xp/points/captures と settings.rewards・bestStreak/title", () => {
   const s = defaultState();
-  assert.equal(s.version, 4);
+  assert.equal(s.version, 5);
   for (const p of s.profiles) {
     const pr = s.progress[p.id];
     assert.equal(pr.xp, 0);

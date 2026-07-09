@@ -10,7 +10,7 @@ function mem() {
   };
 }
 
-test("v3→v4: monsters→captures・xp/points・rewards、進捗保持", () => {
+test("v3→v4→v5: monsters→captures・xp/points・rewards・bestStreak/title、進捗保持", () => {
   const st = mem();
   const v3 = {
     version: 3,
@@ -28,18 +28,20 @@ test("v3→v4: monsters→captures・xp/points・rewards、進捗保持", () => 
   };
   st.setItem("manabi-quest-v1", JSON.stringify(v3));
   const s = load(st);
-  assert.equal(s.version, 4);
+  assert.equal(s.version, 5);
   assert.equal(s.progress.p1.streak, 5);
   assert.equal(s.progress.p1.sessions, 9);
   assert.deepEqual(s.progress.p1.captures, { yukibo: 1, akitan: 1 });
   assert.equal(s.progress.p1.monsters, undefined);
   assert.equal(s.progress.p1.xp, 0);
   assert.equal(s.progress.p1.points, 0);
+  assert.equal(s.progress.p1.bestStreak, 5);
+  assert.equal(s.progress.p1.title, null);
   assert.equal(s.settings.pin, "1234");
   assert.deepEqual(s.settings.rewards, []);
 });
 
-test("v2→v4も一気通貫", () => {
+test("v2→v3→v4→v5も一気通貫", () => {
   const st = mem();
   const v2 = {
     version: 2,
@@ -56,13 +58,15 @@ test("v2→v4も一気通貫", () => {
   };
   st.setItem("manabi-quest-v1", JSON.stringify(v2));
   const s = load(st);
-  assert.equal(s.version, 4);
+  assert.equal(s.version, 5);
   assert.deepEqual(s.progress.p1.captures, { yukibo: 1 });
   assert.equal(s.progress.p1.xp, 0);
+  assert.equal(s.progress.p1.bestStreak, 2);
+  assert.equal(s.progress.p1.title, null);
   assert.deepEqual(s.settings.rewards, []);
 });
 
-test("v4は冪等", () => {
+test("v4→v5移行(bestStreak/title付与)", () => {
   const st = mem();
   const v4 = {
     version: 4,
@@ -86,16 +90,19 @@ test("v4は冪等", () => {
   };
   st.setItem("manabi-quest-v1", JSON.stringify(v4));
   const s = load(st);
+  assert.equal(s.version, 5);
   assert.equal(s.progress.p1.captures.yukibo, 3);
   assert.equal(s.progress.p1.xp, 130);
+  assert.equal(s.progress.p1.bestStreak, 1);
+  assert.equal(s.progress.p1.title, null);
   assert.deepEqual(s.settings.rewards, [
     { id: "r1", name: "アイス", cost: 50 },
   ]);
 });
 
-test("v1・破損はデフォルト(v4)へ", () => {
+test("v1・破損はデフォルト(v5)へ", () => {
   const st = mem();
   st.setItem("manabi-quest-v1", JSON.stringify({ version: 1 }));
-  assert.equal(load(st).version, 4);
+  assert.equal(load(st).version, 5);
   assert.equal(load(st).profiles.length, 4);
 });
