@@ -12,15 +12,13 @@ export const KANJI_BY_GRADE = {
 };
 
 export function kanjiSkills(grade) {
-  const base = [`kanji-read-g${grade}`, `kanji-write-g${grade}`];
-  if (grade === 1 || grade === 2)
-    return [
-      ...base,
-      `kanji-mean-g${grade}`,
-      `kanji-radical-g${grade}`,
-      `kanji-stroke-g${grade}`,
-    ];
-  return base;
+  return [
+    `kanji-read-g${grade}`,
+    `kanji-write-g${grade}`,
+    `kanji-mean-g${grade}`,
+    `kanji-radical-g${grade}`,
+    `kanji-stroke-g${grade}`,
+  ];
 }
 
 function pick(rng, arr) {
