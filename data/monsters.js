@@ -12,7 +12,7 @@ export const MONSTERS = [
       "かまくらは よこてしの 小正月の ぎょうじだよ。中で おもちを やくんだ",
     img: "assets/mon-yukibo.png",
     evolveName: "だいゆきぼう",
-    evolveImg: null,
+    evolveImg: "assets/evo-yukibo.png",
   },
   {
     id: "yukiusa",
@@ -24,7 +24,7 @@ export const MONSTERS = [
     trivia: "雪うさぎは 雪で つくる うさぎ。はっぱの 耳を つけるよ",
     img: "assets/mon-yukiusa.png",
     evolveName: "おおゆきうさ",
-    evolveImg: null,
+    evolveImg: "assets/evo-yukiusa.png",
   },
   {
     id: "fubukimaru",
@@ -36,7 +36,7 @@ export const MONSTERS = [
     trivia: "秋田の 冬は ふぶきが すごい。「じふぶき」と いうんだ",
     img: "assets/mon-fubukimaru.png",
     evolveName: "だいふぶきまる",
-    evolveImg: null,
+    evolveImg: "assets/evo-fubukimaru.png",
   },
   {
     id: "chochinmaru",
@@ -50,7 +50,7 @@ export const MONSTERS = [
       "秋田市の竿燈まつりは ちょうちんを 米だわらに 見立てて ほうさくを ねがうよ",
     img: "assets/mon-chochinmaru.png",
     evolveName: "だいちょうちんまる",
-    evolveImg: null,
+    evolveImg: "assets/evo-chochinmaru.png",
   },
   {
     id: "nebutaro",
@@ -62,7 +62,7 @@ export const MONSTERS = [
     trivia: "青森の ねぶた祭は 大きな 光る 山車が 町を すすむよ",
     img: "assets/mon-nebutaro.png",
     evolveName: "だいねぶたろう",
-    evolveImg: null,
+    evolveImg: "assets/evo-nebutaro.png",
   },
   {
     id: "bondenkun",
@@ -75,7 +75,7 @@ export const MONSTERS = [
       "ぼんでん(梵天)は よこての 冬まつり。長い ぼうを かついで 神社に おさめるよ",
     img: "assets/mon-bondenkun.png",
     evolveName: "だいぼんでんくん",
-    evolveImg: null,
+    evolveImg: "assets/evo-bondenkun.png",
   },
   {
     id: "kokeshimaru",
@@ -87,7 +87,7 @@ export const MONSTERS = [
     trivia: "こけしは 東北うまれの 木の にんぎょう。おんせん地で 生まれたよ",
     img: "assets/mon-kokeshimaru.png",
     evolveName: "おおこけしまる",
-    evolveImg: null,
+    evolveImg: "assets/evo-kokeshimaru.png",
   },
   {
     id: "yakisoban",
@@ -99,7 +99,7 @@ export const MONSTERS = [
     trivia: "横手やきそばは 目玉やきが のっているのが とくちょうだよ",
     img: "assets/mon-yakisoban.png",
     evolveName: "おおやきそばん",
-    evolveImg: null,
+    evolveImg: "assets/evo-yakisoban.png",
   },
   {
     id: "iburin",
@@ -111,7 +111,7 @@ export const MONSTERS = [
     trivia: "いぶりがっこは だいこんを けむりで いぶした 秋田の つけものだよ",
     img: "assets/mon-iburin.png",
     evolveName: "おおいぶりん",
-    evolveImg: null,
+    evolveImg: "assets/evo-iburin.png",
   },
   {
     id: "hatahatan",
@@ -123,7 +123,7 @@ export const MONSTERS = [
     trivia: "ハタハタは 秋田県の 魚。カミナリの 鳴くころ とれるよ",
     img: "assets/mon-hatahatan.png",
     evolveName: "おおはたはたん",
-    evolveImg: null,
+    evolveImg: "assets/evo-hatahatan.png",
   },
   {
     id: "kiritanpon",
@@ -135,7 +135,7 @@ export const MONSTERS = [
     trivia: "きりたんぽは ごはんを ぼうに つけて やいた 秋田の りょうりだよ",
     img: "assets/mon-kiritanpon.png",
     evolveName: "だいきりたんぽん",
-    evolveImg: null,
+    evolveImg: "assets/evo-kiritanpon.png",
   },
   {
     id: "zundamaru",
@@ -147,7 +147,7 @@ export const MONSTERS = [
     trivia: "ずんだもちは えだまめを つぶした あんの おもち。みやぎの めいぶつ",
     img: "assets/mon-zundamaru.png",
     evolveName: "おおずんだまる",
-    evolveImg: null,
+    evolveImg: "assets/evo-zundamaru.png",
   },
   {
     id: "ringoro",
@@ -159,7 +159,7 @@ export const MONSTERS = [
     trivia: "りんごの しゅうかくりょう 日本一は 青森県だよ",
     img: "assets/mon-ringoro.png",
     evolveName: "おおりんごろう",
-    evolveImg: null,
+    evolveImg: "assets/evo-ringoro.png",
   },
   {
     id: "sakuranbou",
@@ -171,7 +171,7 @@ export const MONSTERS = [
     trivia: "さくらんぼの しゅうかくりょう 日本一は 山形県だよ",
     img: "assets/mon-sakuranbou.png",
     evolveName: "おおさくらんぼう",
-    evolveImg: null,
+    evolveImg: "assets/evo-sakuranbou.png",
   },
   {
     id: "akitan",
@@ -183,7 +183,7 @@ export const MONSTERS = [
     trivia: "秋田犬は 秋田うまれの 大きな 犬。ハチ公も 秋田犬だよ",
     img: "assets/mon-akitan.png",
     evolveName: "だいあきたん",
-    evolveImg: null,
+    evolveImg: "assets/evo-akitan.png",
   },
   {
     id: "chokaigan",
@@ -195,7 +195,7 @@ export const MONSTERS = [
     trivia: "鳥海山は 秋田と 山形の さかいに ある 大きな 山だよ",
     img: "assets/mon-chokaigan.png",
     evolveName: "だいちょうかいがん",
-    evolveImg: null,
+    evolveImg: "assets/evo-chokaigan.png",
   },
   {
     id: "shirakamin",
@@ -207,7 +207,7 @@ export const MONSTERS = [
     trivia: "白神山地は 青森と 秋田に またがる ブナの森。世界いさんだよ",
     img: "assets/mon-shirakamin.png",
     evolveName: "おおしらかみん",
-    evolveImg: null,
+    evolveImg: "assets/evo-shirakamin.png",
   },
   {
     id: "inaniwan",
@@ -219,7 +219,7 @@ export const MONSTERS = [
     trivia: "稲庭うどんは 秋田の ほそくて つるつるの うどんだよ",
     img: "assets/mon-inaniwan.png",
     evolveName: "おおいなにわん",
-    evolveImg: null,
+    evolveImg: "assets/evo-inaniwan.png",
   },
   {
     id: "namahagen",
@@ -232,7 +232,7 @@ export const MONSTERS = [
       "なまはげは 男鹿半島の ぎょうじ。「なくこは いねがー」と やってくるよ",
     img: "assets/mon-namahagen.png",
     evolveName: "おおなまはげん",
-    evolveImg: null,
+    evolveImg: "assets/evo-namahagen.png",
   },
   {
     id: "tazukohime",
@@ -244,6 +244,6 @@ export const MONSTERS = [
     trivia: "田沢湖は 日本一 ふかい みずうみ。たつこ姫の でんせつが あるよ",
     img: "assets/mon-tazukohime.png",
     evolveName: "りゅうたつこりん",
-    evolveImg: null,
+    evolveImg: "assets/evo-tazukohime.png",
   },
 ];
