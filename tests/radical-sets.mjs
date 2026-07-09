@@ -34,6 +34,7 @@ export const VARIANT_RADICALS = new Set([
   "麦",
   "黄",
   "黒",
+  "ツ",
 ]);
 
 export function isValidRadical(r) {
