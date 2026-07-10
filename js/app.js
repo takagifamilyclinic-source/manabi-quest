@@ -300,7 +300,11 @@ function renderBadges() {
           return `<div class="badge-cell locked">
             <div class="badge-icon">🔒</div>
             <div class="badge-name">${b.name}</div>
-            <div class="badge-left">あと${st.target - st.current}${b.unit}</div>
+            <div class="badge-left">${
+              b.id.startsWith("streak-")
+                ? `さいこう れんぞく あと${st.target - st.current}日`
+                : `あと${st.target - st.current}${b.unit}`
+            }</div>
           </div>`;
         const active = title === b.id;
         return `<div class="badge-cell earned ${active ? "active" : ""}" data-id="${b.id}">
