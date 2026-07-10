@@ -1,12 +1,21 @@
 // バッジの純粋計算。導出方式(保存しない)=過去のがんばりに自動でさかのぼって付与される。
 import { levelFromXp, ownedCount, isEvolved } from "./progress-calc.js";
 
-function correctCount(attempts, profileId, isKanji) {
+// skillTag のプレフィックスで教科を判定(sci-/soc- は次弾予約)
+export function subjectOfTag(skillTag) {
+  if (skillTag.startsWith("kanji-")) return "kanji";
+  if (skillTag.startsWith("eng-")) return "english";
+  if (skillTag.startsWith("sci-")) return "science";
+  if (skillTag.startsWith("soc-")) return "social";
+  return "math";
+}
+
+function correctCount(attempts, profileId, subject) {
   return attempts.filter(
     (a) =>
       a.profileId === profileId &&
       a.correct &&
-      a.skillTag.startsWith("kanji-") === isKanji,
+      subjectOfTag(a.skillTag) === subject,
   ).length;
 }
 
@@ -158,7 +167,7 @@ export const BADGES = [
     emoji: "➗",
     target: 100,
     unit: "もん",
-    cur: (c) => correctCount(c.attempts, c.profileId, false),
+    cur: (c) => correctCount(c.attempts, c.profileId, "math"),
   },
   {
     id: "math-500",
@@ -166,7 +175,7 @@ export const BADGES = [
     emoji: "🧮",
     target: 500,
     unit: "もん",
-    cur: (c) => correctCount(c.attempts, c.profileId, false),
+    cur: (c) => correctCount(c.attempts, c.profileId, "math"),
   },
   {
     id: "kanji-100",
@@ -174,7 +183,7 @@ export const BADGES = [
     emoji: "✏️",
     target: 100,
     unit: "もん",
-    cur: (c) => correctCount(c.attempts, c.profileId, true),
+    cur: (c) => correctCount(c.attempts, c.profileId, "kanji"),
   },
   {
     id: "kanji-500",
@@ -182,7 +191,7 @@ export const BADGES = [
     emoji: "📚",
     target: 500,
     unit: "もん",
-    cur: (c) => correctCount(c.attempts, c.profileId, true),
+    cur: (c) => correctCount(c.attempts, c.profileId, "kanji"),
   },
 ];
 

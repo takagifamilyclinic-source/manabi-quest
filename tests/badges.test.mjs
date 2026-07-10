@@ -6,6 +6,7 @@ import {
   badgeStatus,
   earnedBadges,
   newBadges,
+  subjectOfTag,
 } from "../js/badges.js";
 
 function makeState(over = {}, attempts = []) {
@@ -134,4 +135,27 @@ test("newBadges: 差分のみ・定義順で返す", () => {
     newBadges(before, after).map((b) => b.id),
     ["streak-7", "battle-10"],
   );
+});
+
+test("subjectOfTag: プレフィックスで教科判定", () => {
+  assert.equal(subjectOfTag("kanji-read-g3"), "kanji");
+  assert.equal(subjectOfTag("eng-mean-g1"), "english");
+  assert.equal(subjectOfTag("sci-x-g3"), "science");
+  assert.equal(subjectOfTag("soc-x-g4"), "social");
+  assert.equal(subjectOfTag("mul-1"), "math");
+  assert.equal(subjectOfTag("add-2digit"), "math");
+});
+
+test("英語の正解は算数・漢字バッジに算入されない", () => {
+  const attempts = [];
+  for (let i = 0; i < 150; i++)
+    attempts.push({
+      profileId: "p1",
+      skillTag: "eng-mean-g1",
+      correct: true,
+      date: "2026-07-10",
+    });
+  const e = earnedBadges(badgeContext(makeState({}, attempts), "p1", IDS));
+  assert.ok(!e.has("math-100"), "eng-がmath-100に算入された");
+  assert.ok(!e.has("kanji-100"));
 });
