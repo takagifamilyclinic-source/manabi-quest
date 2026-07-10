@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>まなびクエスト × Claude 連携手順書</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic UI", sans-serif;
+        background: #f7f8fc;
+        color: #1a2456;
+        line-height: 1.9;
+        font-size: 18px;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 24px 20px 60px;
+      }
+      h1 {
+        font-size: 26px;
+        margin: 12px 0 4px;
+      }
+      .sub {
+        color: #5a6390;
+        margin-bottom: 24px;
+      }
+      h2 {
+        font-size: 21px;
+        margin: 36px 0 12px;
+        border-left: 8px solid #f5a623;
+        padding-left: 10px;
+      }
+      .flow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: stretch;
+        margin: 16px 0;
+      }
+      .flow .box {
+        flex: 1 1 140px;
+        background: #fff;
+        border: 2px solid #dfe3f2;
+        border-radius: 12px;
+        padding: 10px;
+        text-align: center;
+        font-weight: bold;
+      }
+      .flow .box small {
+        display: block;
+        font-weight: normal;
+        color: #5a6390;
+        font-size: 13px;
+      }
+      .flow .arrow {
+        align-self: center;
+        font-size: 20px;
+        color: #f5a623;
+      }
+      .step {
+        display: flex;
+        gap: 14px;
+        background: #fff;
+        border-radius: 14px;
+        padding: 16px;
+        margin: 12px 0;
+        border: 1px solid #e3e7f5;
+      }
+      .num {
+        flex: 0 0 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #f5a623;
+        color: #fff;
+        font-size: 22px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .step b {
+        display: block;
+        margin-bottom: 4px;
+      }
+      code,
+      .say {
+        background: #eef1fb;
+        border-radius: 6px;
+        padding: 2px 8px;
+        font-family: Consolas, monospace;
+        font-size: 16px;
+      }
+      .say {
+        display: block;
+        padding: 10px 14px;
+        margin-top: 6px;
+      }
+      .warn {
+        background: #fff6e5;
+        border: 1px solid #ffd98a;
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin: 10px 0;
+      }
+      .warn b {
+        color: #a05c00;
+      }
+      footer {
+        margin-top: 40px;
+        color: #8b93b8;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎒 まなびクエスト × Claude 連携手順書</h1>
+    <div class="sub">
+      子どもの「にがて」に合わせてアプリを育てるためのフロー（忘れ防止メモ）
+    </div>
+
+    <h2>これは何？</h2>
+    <p>
+      アプリに記録された成績を Claude Code
+      に渡すと、苦手の分析とアプリの改善（問題の調整・データ追加など）をしてもらえます。この循環を回すための手順書です。
+    </p>
+    <div class="flow">
+      <div class="box">
+        📱 iPadで<br />きろくを書き出す<small>親ページ</small>
+      </div>
+      <div class="arrow">▶</div>
+      <div class="box">💻 PCで<br />Claudeに渡す<small>/manabi</small></div>
+      <div class="arrow">▶</div>
+      <div class="box">🤖 分析と改善<small>承認してから実装</small></div>
+      <div class="arrow">▶</div>
+      <div class="box">🔄 iPadに反映<small>開き直すだけ</small></div>
+    </div>
+
+    <h2>📱 iPad側（きろくの書き出し）</h2>
+    <div class="step">
+      <div class="num">1</div>
+      <div>
+        <b>プロフィール画面を開く</b
+        >アプリを起動した最初の画面（プレイヤーえらび）。
+      </div>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <div>
+        <b>右下の ⚙ を長押し</b>数秒おさえると PIN
+        入力が出ます。PIN（4桁）を入れて親ページへ。
+      </div>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <div>
+        <b>「きろくを 書き出す」をタップ</b
+        >下の枠に記録（JSON）が表示され、自動で全選択されます。そのままコピー。
+      </div>
+    </div>
+    <div class="step">
+      <div class="num">4</div>
+      <div><b>PCへ送る</b>メール・メモ共有など、いつもの方法でOK。</div>
+    </div>
+
+    <h2>💻 PC側（Claudeに渡す）</h2>
+    <div class="step">
+      <div class="num">5</div>
+      <div>
+        <b>Claude Code を起動して <code>/manabi</code></b
+        >まなびクエスト開発モードで再開します。
+      </div>
+    </div>
+    <div class="step">
+      <div class="num">6</div>
+      <div>
+        <b>記録を貼り付けて依頼</b
+        ><span class="say"
+          >この記録から苦手を分析して: （ここにJSONを貼り付け）</span
+        >
+      </div>
+    </div>
+    <div class="step">
+      <div class="num">7</div>
+      <div>
+        <b>Claudeがやること</b
+        >苦手Topの分析→改善の提案。<b>提案にOKを出してから</b>実装・git push
+        まで進みます（勝手には変えません）。
+      </div>
+    </div>
+
+    <h2>🔄 反映の確認</h2>
+    <div class="step">
+      <div class="num">8</div>
+      <div>
+        <b>数分待って iPad でアプリを開き直す</b
+        >公開ページが自動更新され、アプリが新しい中身に入れ替わります（Service
+        Worker が新バージョンを取得）。
+      </div>
+    </div>
+
+    <h2>😵 こまったとき</h2>
+    <div class="warn">
+      <b>更新が来ない</b> →
+      アプリを完全に閉じて開き直す（それでもダメなら1日おいてもう一度）。
+    </div>
+    <div class="warn">
+      <b>PINを忘れた</b> →
+      PCでClaudeに「まなびクエストのPINをリセットして」と頼む（データは消えません）。
+    </div>
+    <div class="warn">
+      <b>記録が大きすぎて貼れない</b> →
+      テキストファイルに保存して「このファイルを読んで」と渡す。
+    </div>
+
+    <footer>
+      まなびクエスト（https://takagifamilyclinic-source.github.io/manabi-quest/）／この手順書もアプリと一緒に更新されます。
+    </footer>
+  </body>
+</html>
