@@ -11,6 +11,33 @@ export const KANJI_BY_GRADE = {
   4: KANJI_G4,
 };
 
+// 部首の同族ファミリー(氵と水 等)。部首問題のダミーから正解の同族を除外して
+// 紛らわしい4択(泳の部首に氵と水が同時に並ぶ等)を防ぐ。
+const RADICAL_FAMILIES = [
+  ["氵", "水"],
+  ["亻", "人"],
+  ["扌", "手"],
+  ["刂", "刀"],
+  ["忄", "心"],
+  ["灬", "火"],
+  ["犭", "犬"],
+  ["ネ", "示"],
+  ["衤", "衣"],
+  ["艹", "艸"],
+  ["辶", "辵"],
+  ["攵", "攴"],
+  ["飠", "食"],
+  ["王", "玉"],
+  ["ツ", "⺍"],
+];
+const FAMILY_OF = new Map();
+for (const fam of RADICAL_FAMILIES)
+  for (const r of fam) FAMILY_OF.set(r, fam[0]);
+
+export function radicalFamily(r) {
+  return FAMILY_OF.get(r) ?? r;
+}
+
 export function kanjiSkills(grade) {
   return [
     `kanji-read-g${grade}`,
@@ -77,9 +104,11 @@ export function makeKanjiQuestion(skillTag, rng = Math.random) {
 
   if (kind === "radical") {
     const answer = target.radical;
+    const fam = radicalFamily(answer);
     const otherRadicals = list
       .filter((k) => k.kanji !== target.kanji)
-      .map((k) => k.radical);
+      .map((k) => k.radical)
+      .filter((r) => radicalFamily(r) !== fam);
     const dummies = sampleUnique(rng, otherRadicals, 3, new Set([answer]));
     const choices = shuffle(rng, [answer, ...dummies]);
     return {
