@@ -307,11 +307,11 @@ function renderBadges() {
             }</div>
           </div>`;
         const active = title === b.id;
-        return `<div class="badge-cell earned ${active ? "active" : ""}" data-id="${b.id}">
+        return `<button type="button" class="badge-cell earned ${active ? "active" : ""}" data-id="${b.id}" aria-pressed="${active}">
           <div class="badge-icon">${b.emoji}</div>
           <div class="badge-name">${b.name}</div>
           <div class="badge-left">${active ? "そうびちゅう!" : "タップで しょうごうに"}</div>
-        </div>`;
+        </button>`;
       }).join("")}
     </div>
     <button id="badge-back" class="secondary">もどる</button>

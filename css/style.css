@@ -343,6 +343,15 @@ button.secondary {
   text-align: center;
   border: 2px solid transparent;
 }
+/* 獲得済みセルは<button>。グローバルbuttonの黄色スタイルを打ち消す */
+button.badge-cell {
+  font: inherit;
+  color: inherit;
+  min-height: 0;
+  box-shadow: none;
+  width: 100%;
+  display: block;
+}
 .badge-cell.locked {
   opacity: 0.45;
   filter: grayscale(1);
@@ -394,4 +403,18 @@ button.speak {
   margin: 0 0 0 6px;
   vertical-align: middle;
   border-radius: 999px;
+}
+
+/* ===== モーション軽減(OSの「視差効果を減らす」設定を尊重・第6弾その2) =====
+   shake/pop/glow/badgeglow などの装飾アニメと遷移を実質停止する。
+   iOS: 設定>アクセシビリティ>動作>視差効果を減らす をONにしたユーザー向け。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
