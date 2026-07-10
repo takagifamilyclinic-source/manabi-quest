@@ -29,9 +29,9 @@ function makeState(over = {}, attempts = []) {
 }
 const IDS = Array.from({ length: 20 }, (_, i) => `m${i + 1}`);
 
-test("バッジは21種・IDユニーク・全てに name/emoji/target/unit", () => {
-  assert.equal(BADGES.length, 21);
-  assert.equal(new Set(BADGES.map((b) => b.id)).size, 21);
+test("バッジは23種・IDユニーク・全てに name/emoji/target/unit", () => {
+  assert.equal(BADGES.length, 23);
+  assert.equal(new Set(BADGES.map((b) => b.id)).size, 23);
   for (const b of BADGES) {
     assert.ok(b.name && b.emoji && b.unit, b.id);
     assert.ok(Number.isInteger(b.target) && b.target >= 1, b.id);
@@ -158,4 +158,26 @@ test("英語の正解は算数・漢字バッジに算入されない", () => {
   const e = earnedBadges(badgeContext(makeState({}, attempts), "p1", IDS));
   assert.ok(!e.has("math-100"), "eng-がmath-100に算入された");
   assert.ok(!e.has("kanji-100"));
+});
+
+test("理科バッジ: BADGES に sci-100/sci-500 があり総数23", () => {
+  const ids = BADGES.map((b) => b.id);
+  assert.ok(ids.includes("sci-100"));
+  assert.ok(ids.includes("sci-500"));
+  assert.equal(BADGES.length, 23);
+});
+
+test("理科の正解は sci-100 に算入され、math/kanji には算入されない", () => {
+  const attempts = [];
+  for (let i = 0; i < 100; i++)
+    attempts.push({
+      profileId: "p1",
+      skillTag: "sci-konchu-g3",
+      correct: true,
+      date: "2026-07-10",
+    });
+  const e = earnedBadges(badgeContext(makeState({}, attempts), "p1", IDS));
+  assert.ok(e.has("sci-100"), "sci-がsci-100に算入されていない");
+  assert.ok(!e.has("math-100"), "sci-がmath-100に誤算入");
+  assert.ok(!e.has("kanji-100"), "sci-がkanji-100に誤算入");
 });
