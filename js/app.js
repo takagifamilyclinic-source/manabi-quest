@@ -337,10 +337,12 @@ function renderSubject() {
     <h1>きょうか を えらぶ</h1>
     <button id="sub-math">➗ さんすう</button>
     <button id="sub-kanji" class="secondary">✏️ かんじ</button>
+    <button id="sub-eng" class="secondary">🗣️ えいご</button>
     <button id="sub-back" class="secondary">もどる</button>
   `;
   $("#sub-math").addEventListener("click", () => startBattle("math"));
   $("#sub-kanji").addEventListener("click", () => startBattle("kanji"));
+  $("#sub-eng").addEventListener("click", () => startBattle("english"));
   $("#sub-back").addEventListener("click", renderHome);
   show("#screen-subject");
 }
@@ -362,6 +364,7 @@ function startBattle(subject = "math") {
 function renderQuestion() {
   const b = app.battle;
   const qn = b.questions[b.index];
+  const canSpeak = qn.speak && "speechSynthesis" in window;
   const answerArea = qn.choices
     ? `<div class="choices">${qn.choices
         .map((c) => `<button class="choice" data-c="${c}">${c}</button>`)
@@ -379,9 +382,21 @@ function renderQuestion() {
       <div class="hpbar"><div style="width:${(b.hp / b.maxHp) * 100}%"></div></div>
       <div>だい ${b.index + 1} もん / ${b.questions.length}</div>
     </div>
-    <div class="qtext">${qn.text}</div>
+    <div class="qtext">${qn.text}${canSpeak ? ` <button id="btn-speak" class="speak">🔊</button>` : ""}</div>
     ${answerArea}
   `;
+  if (canSpeak)
+    $("#btn-speak").addEventListener("click", () => {
+      const u = new SpeechSynthesisUtterance(qn.speak);
+      u.lang = "en-US";
+      u.rate = 0.9;
+      const en = speechSynthesis
+        .getVoices()
+        .find((v) => v.lang.startsWith("en"));
+      if (en) u.voice = en;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(u);
+    });
   if (qn.choices) {
     document.querySelectorAll(".choice").forEach((btn) =>
       btn.addEventListener("click", () => {
