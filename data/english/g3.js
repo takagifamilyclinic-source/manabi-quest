@@ -1,0 +1,218 @@
+export const ENGLISH_G3 = [
+  // ぶんぼうぐ (10)
+  {
+    word: "eraser",
+    kana: "イレーザー",
+    meaning: "けしゴム",
+    category: "ぶんぼうぐ",
+  },
+  {
+    word: "ruler",
+    kana: "ルーラー",
+    meaning: "ものさし",
+    category: "ぶんぼうぐ",
+  },
+  {
+    word: "scissors",
+    kana: "シザーズ",
+    meaning: "はさみ",
+    category: "ぶんぼうぐ",
+  },
+  { word: "glue", kana: "グルー", meaning: "のり", category: "ぶんぼうぐ" },
+  {
+    word: "notebook",
+    kana: "ノートブック",
+    meaning: "ノート",
+    category: "ぶんぼうぐ",
+  },
+  {
+    word: "crayon",
+    kana: "クレヨン",
+    meaning: "クレヨン",
+    category: "ぶんぼうぐ",
+  },
+  {
+    word: "marker",
+    kana: "マーカー",
+    meaning: "マーカー",
+    category: "ぶんぼうぐ",
+  },
+  {
+    word: "stapler",
+    kana: "ステープラー",
+    meaning: "ホッチキス",
+    category: "ぶんぼうぐ",
+  },
+  { word: "tape", kana: "テープ", meaning: "テープ", category: "ぶんぼうぐ" },
+  {
+    word: "pencil case",
+    kana: "ペンシルケース",
+    meaning: "ふでばこ",
+    category: "ぶんぼうぐ",
+  },
+
+  // スポーツ (10)
+  {
+    word: "soccer",
+    kana: "サッカー",
+    meaning: "サッカー",
+    category: "スポーツ",
+  },
+  {
+    word: "baseball",
+    kana: "ベースボール",
+    meaning: "やきゅう",
+    category: "スポーツ",
+  },
+  {
+    word: "basketball",
+    kana: "バスケットボール",
+    meaning: "バスケットボール",
+    category: "スポーツ",
+  },
+  { word: "tennis", kana: "テニス", meaning: "テニス", category: "スポーツ" },
+  {
+    word: "swimming",
+    kana: "スイミング",
+    meaning: "すいえい",
+    category: "スポーツ",
+  },
+  {
+    word: "volleyball",
+    kana: "バレーボール",
+    meaning: "バレーボール",
+    category: "スポーツ",
+  },
+  {
+    word: "badminton",
+    kana: "バドミントン",
+    meaning: "バドミントン",
+    category: "スポーツ",
+  },
+  {
+    word: "dodgeball",
+    kana: "ドッジボール",
+    meaning: "ドッジボール",
+    category: "スポーツ",
+  },
+  {
+    word: "table tennis",
+    kana: "テーブルテニス",
+    meaning: "たっきゅう",
+    category: "スポーツ",
+  },
+  { word: "skiing", kana: "スキー", meaning: "スキー", category: "スポーツ" },
+
+  // ようび (7)
+  {
+    word: "monday",
+    kana: "マンデー",
+    meaning: "げつようび",
+    category: "ようび",
+  },
+  {
+    word: "tuesday",
+    kana: "チューズデー",
+    meaning: "かようび",
+    category: "ようび",
+  },
+  {
+    word: "wednesday",
+    kana: "ウェンズデー",
+    meaning: "すいようび",
+    category: "ようび",
+  },
+  {
+    word: "thursday",
+    kana: "サーズデー",
+    meaning: "もくようび",
+    category: "ようび",
+  },
+  {
+    word: "friday",
+    kana: "フライデー",
+    meaning: "きんようび",
+    category: "ようび",
+  },
+  {
+    word: "saturday",
+    kana: "サタデー",
+    meaning: "どようび",
+    category: "ようび",
+  },
+  {
+    word: "sunday",
+    kana: "サンデー",
+    meaning: "にちようび",
+    category: "ようび",
+  },
+
+  // つき (12)
+  {
+    word: "january",
+    kana: "ジャニュアリー",
+    meaning: "いちがつ",
+    category: "つき",
+  },
+  {
+    word: "february",
+    kana: "フェブラリー",
+    meaning: "にがつ",
+    category: "つき",
+  },
+  { word: "march", kana: "マーチ", meaning: "さんがつ", category: "つき" },
+  { word: "april", kana: "エイプリル", meaning: "しがつ", category: "つき" },
+  { word: "may", kana: "メイ", meaning: "ごがつ", category: "つき" },
+  { word: "june", kana: "ジューン", meaning: "ろくがつ", category: "つき" },
+  { word: "july", kana: "ジュライ", meaning: "しちがつ", category: "つき" },
+  { word: "august", kana: "オーガスト", meaning: "はちがつ", category: "つき" },
+  {
+    word: "september",
+    kana: "セプテンバー",
+    meaning: "くがつ",
+    category: "つき",
+  },
+  {
+    word: "october",
+    kana: "オクトーバー",
+    meaning: "じゅうがつ",
+    category: "つき",
+  },
+  {
+    word: "november",
+    kana: "ノベンバー",
+    meaning: "じゅういちがつ",
+    category: "つき",
+  },
+  {
+    word: "december",
+    kana: "ディセンバー",
+    meaning: "じゅうにがつ",
+    category: "つき",
+  },
+
+  // からだ (12)
+  { word: "head", kana: "ヘッド", meaning: "あたま", category: "からだ" },
+  { word: "face", kana: "フェイス", meaning: "かお", category: "からだ" },
+  { word: "eye", kana: "アイ", meaning: "め", category: "からだ" },
+  { word: "ear", kana: "イヤー", meaning: "みみ", category: "からだ" },
+  { word: "nose", kana: "ノーズ", meaning: "はな", category: "からだ" },
+  { word: "mouth", kana: "マウス", meaning: "くち", category: "からだ" },
+  { word: "hand", kana: "ハンド", meaning: "て", category: "からだ" },
+  { word: "arm", kana: "アーム", meaning: "うで", category: "からだ" },
+  { word: "leg", kana: "レッグ", meaning: "あし", category: "からだ" },
+  { word: "shoulder", kana: "ショルダー", meaning: "かた", category: "からだ" },
+  { word: "hair", kana: "ヘア", meaning: "かみのけ", category: "からだ" },
+  { word: "tooth", kana: "トゥース", meaning: "は", category: "からだ" },
+
+  // どうさ (9)
+  { word: "run", kana: "ラン", meaning: "はしる", category: "どうさ" },
+  { word: "jump", kana: "ジャンプ", meaning: "とぶ", category: "どうさ" },
+  { word: "walk", kana: "ウォーク", meaning: "あるく", category: "どうさ" },
+  { word: "sit", kana: "シット", meaning: "すわる", category: "どうさ" },
+  { word: "stand", kana: "スタンド", meaning: "たつ", category: "どうさ" },
+  { word: "sleep", kana: "スリープ", meaning: "ねる", category: "どうさ" },
+  { word: "eat", kana: "イート", meaning: "たべる", category: "どうさ" },
+  { word: "drink", kana: "ドリンク", meaning: "のむ", category: "どうさ" },
+  { word: "sing", kana: "シング", meaning: "うたう", category: "どうさ" },
+];
