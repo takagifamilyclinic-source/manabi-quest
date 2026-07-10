@@ -1,6 +1,7 @@
 // 教科横断のセッション生成(純粋)。苦手重みでskillTagを選び質問を作る。
 import { GRADE_SKILLS, generateQuestion } from "./math-gen.js";
 import { kanjiSkills, makeKanjiQuestion } from "./kanji-quiz.js";
+import { englishSkills, makeEnglishQuestion } from "./english-quiz.js";
 import { weightBySkill } from "./weakness.js";
 
 function skillsFor(grade, subject) {
@@ -10,6 +11,7 @@ function skillsFor(grade, subject) {
     return s;
   }
   if (subject === "kanji") return kanjiSkills(grade);
+  if (subject === "english") return englishSkills(grade);
   throw new Error(`unknown subject: ${subject}`);
 }
 
@@ -32,10 +34,11 @@ export function buildSession(grade, subject, opts = {}) {
   } = opts;
   const skills = skillsFor(grade, subject);
   const weights = weightBySkill(skills, attempts, profileId);
-  const make = (skill) =>
-    subject === "math"
-      ? generateQuestion(skill, rng)
-      : makeKanjiQuestion(skill, rng);
+  const make = (skill) => {
+    if (subject === "math") return generateQuestion(skill, rng);
+    if (subject === "english") return makeEnglishQuestion(skill, rng);
+    return makeKanjiQuestion(skill, rng);
+  };
   return Array.from({ length: count }, () =>
     make(weightedPick(rng, skills, weights)),
   );
