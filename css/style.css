@@ -384,3 +384,14 @@ button.secondary {
     box-shadow: 0 0 16px rgba(245, 166, 35, 0.9);
   }
 }
+
+/* ===== 英語 読み上げ(第6弾) ===== */
+button.speak {
+  width: auto;
+  display: inline-block;
+  font-size: 18px;
+  padding: 4px 14px;
+  margin: 0 0 0 6px;
+  vertical-align: middle;
+  border-radius: 999px;
+}

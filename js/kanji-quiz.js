@@ -3,6 +3,7 @@ import { KANJI_G1 } from "../data/kanji/g1.js";
 import { KANJI_G2 } from "../data/kanji/g2.js";
 import { KANJI_G3 } from "../data/kanji/g3.js";
 import { KANJI_G4 } from "../data/kanji/g4.js";
+import { pick, sampleUnique, shuffle } from "./quiz-util.js";
 
 export const KANJI_BY_GRADE = {
   1: KANJI_G1,
@@ -46,34 +47,6 @@ export function kanjiSkills(grade) {
     `kanji-radical-g${grade}`,
     `kanji-stroke-g${grade}`,
   ];
-}
-
-function pick(rng, arr) {
-  return arr[Math.floor(rng() * arr.length)];
-}
-
-function sampleUnique(rng, arr, n, exclude) {
-  const pool = arr.filter((x) => !exclude.has(x));
-  const out = [];
-  const used = new Set();
-  let guard = 0;
-  while (out.length < n && guard++ < 1000 && pool.length) {
-    const c = pick(rng, pool);
-    if (!used.has(c)) {
-      used.add(c);
-      out.push(c);
-    }
-  }
-  return out;
-}
-
-function shuffle(rng, arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
 }
 
 export function makeKanjiQuestion(skillTag, rng = Math.random) {
