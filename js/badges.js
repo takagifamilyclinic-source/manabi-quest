@@ -193,6 +193,22 @@ export const BADGES = [
     unit: "もん",
     cur: (c) => correctCount(c.attempts, c.profileId, "kanji"),
   },
+  {
+    id: "sci-100",
+    name: "りか100もん",
+    emoji: "🔬",
+    target: 100,
+    unit: "もん",
+    cur: (c) => correctCount(c.attempts, c.profileId, "science"),
+  },
+  {
+    id: "sci-500",
+    name: "りかはかせ",
+    emoji: "🧪",
+    target: 500,
+    unit: "もん",
+    cur: (c) => correctCount(c.attempts, c.profileId, "science"),
+  },
 ];
 
 export function badgeContext(state, profileId, monsterIds) {

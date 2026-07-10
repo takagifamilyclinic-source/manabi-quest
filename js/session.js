@@ -2,6 +2,7 @@
 import { GRADE_SKILLS, generateQuestion } from "./math-gen.js";
 import { kanjiSkills, makeKanjiQuestion } from "./kanji-quiz.js";
 import { englishSkills, makeEnglishQuestion } from "./english-quiz.js";
+import { scienceSkills, makeScienceQuestion } from "./science-quiz.js";
 import { weightBySkill } from "./weakness.js";
 
 function skillsFor(grade, subject) {
@@ -12,6 +13,7 @@ function skillsFor(grade, subject) {
   }
   if (subject === "kanji") return kanjiSkills(grade);
   if (subject === "english") return englishSkills(grade);
+  if (subject === "science") return scienceSkills(grade);
   throw new Error(`unknown subject: ${subject}`);
 }
 
@@ -37,6 +39,7 @@ export function buildSession(grade, subject, opts = {}) {
   const make = (skill) => {
     if (subject === "math") return generateQuestion(skill, rng);
     if (subject === "english") return makeEnglishQuestion(skill, rng);
+    if (subject === "science") return makeScienceQuestion(skill, rng);
     return makeKanjiQuestion(skill, rng);
   };
   return Array.from({ length: count }, () =>

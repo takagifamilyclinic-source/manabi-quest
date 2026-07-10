@@ -333,16 +333,24 @@ function renderBadges() {
 }
 
 function renderSubject() {
+  const grade = profile().grade;
+  const rikaBtn =
+    grade === 3 || grade === 4
+      ? `<button id="sub-sci" class="secondary">🔬 りか</button>`
+      : "";
   $("#screen-subject").innerHTML = `
     <h1>きょうか を えらぶ</h1>
     <button id="sub-math">➗ さんすう</button>
     <button id="sub-kanji" class="secondary">✏️ かんじ</button>
     <button id="sub-eng" class="secondary">🗣️ えいご</button>
+    ${rikaBtn}
     <button id="sub-back" class="secondary">もどる</button>
   `;
   $("#sub-math").addEventListener("click", () => startBattle("math"));
   $("#sub-kanji").addEventListener("click", () => startBattle("kanji"));
   $("#sub-eng").addEventListener("click", () => startBattle("english"));
+  if (grade === 3 || grade === 4)
+    $("#sub-sci").addEventListener("click", () => startBattle("science"));
   $("#sub-back").addEventListener("click", renderHome);
   show("#screen-subject");
 }
