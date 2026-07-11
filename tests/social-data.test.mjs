@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { SOCIAL_G3 } from "../data/social/g3.js";
+import { SOCIAL_G4 } from "../data/social/g4.js";
 
 export const UNITS_G3 = new Set([
   "chizu",
@@ -55,3 +56,25 @@ export function validateSocial(list, grade, units, label) {
 
 test("社会g3: 約50問・形式・重複なし・全単元3問以上", () =>
   validateSocial(SOCIAL_G3, 3, UNITS_G3, "g3"));
+
+export const UNITS_G4 = new Set([
+  "todofuken",
+  "akita",
+  "kurashi",
+  "saigai",
+  "dentou",
+  "senjin",
+]);
+
+test("社会g4: 約50問・形式・重複なし・全単元3問以上", () =>
+  validateSocial(SOCIAL_G4, 4, UNITS_G4, "g4"));
+
+test("社会 全体: q が学年をまたいでユニーク・合計 ~100", () => {
+  const all = [...SOCIAL_G3, ...SOCIAL_G4];
+  assert.ok(
+    all.length >= 92 && all.length <= 108,
+    `合計 ~100 (実際 ${all.length})`,
+  );
+  const dup = all.map((e) => e.q).filter((q, i, a) => a.indexOf(q) !== i);
+  assert.deepEqual(dup, [], `学年間で q 重複: ${dup.join(" / ")}`);
+});
