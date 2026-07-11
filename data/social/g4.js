@@ -24,10 +24,11 @@ export const SOCIAL_G4 = [
   },
   {
     skillTag: "soc-todofuken-g4",
-    q: "47都道府県の中で、名前に「都」が つく ところは どこ?",
+    q: "47都道府県で、ただ 1つだけ「都」と よばれるのは どこ?",
     answer: "東京都",
     distractors: ["大阪府", "京都府", "北海道"],
-    explain: "47都道府県の中で「都」が つくのは 東京都だけです。",
+    explain:
+      "「都」と よばれるのは 東京都だけ。ほかに 道(北海道)・府(大阪府・京都府)・県が あります。",
   },
   {
     skillTag: "soc-todofuken-g4",
@@ -54,7 +55,7 @@ export const SOCIAL_G4 = [
     skillTag: "soc-todofuken-g4",
     q: "日本を 大きく 分けた 地方区分は ぜんぶで いくつ?",
     answer: "8つ",
-    distractors: ["6つ", "10", "5つ"],
+    distractors: ["6つ", "10つ", "5つ"],
     explain:
       "北海道・東北・関東・中部・近畿・中国・四国・九州の 8つに 分けられます。",
   },
@@ -151,7 +152,7 @@ export const SOCIAL_G4 = [
     skillTag: "soc-kurashi-g4",
     q: "もえるごみを あつめて もやす しせつは?",
     answer: "せいそう工場（ごみしょり場）",
-    distractors: ["じょう水場", "はつでん所", "ちょう水池"],
+    distractors: ["じょう水場", "はつでん所", "ちょすいち"],
     explain:
       "あつめられた もえるごみは せいそう工場で もやして しょりされます。",
   },
@@ -210,7 +211,7 @@ export const SOCIAL_G4 = [
     skillTag: "soc-kurashi-g4",
     q: "水道の 水が 家庭に とどくまでの 大もとと なる、川の水を せき止めた しせつは?",
     answer: "ダム",
-    distractors: ["ため池", "水路", "ちょう水池"],
+    distractors: ["ため池", "水路", "はいすいこう"],
     explain:
       "ダムに ためた水は じょう水場で きれいに されてから 家庭に とどきます。",
   },
