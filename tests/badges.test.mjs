@@ -29,9 +29,9 @@ function makeState(over = {}, attempts = []) {
 }
 const IDS = Array.from({ length: 20 }, (_, i) => `m${i + 1}`);
 
-test("バッジは23種・IDユニーク・全てに name/emoji/target/unit", () => {
-  assert.equal(BADGES.length, 23);
-  assert.equal(new Set(BADGES.map((b) => b.id)).size, 23);
+test("バッジは25種・IDユニーク・全てに name/emoji/target/unit", () => {
+  assert.equal(BADGES.length, 25);
+  assert.equal(new Set(BADGES.map((b) => b.id)).size, 25);
   for (const b of BADGES) {
     assert.ok(b.name && b.emoji && b.unit, b.id);
     assert.ok(Number.isInteger(b.target) && b.target >= 1, b.id);
@@ -160,11 +160,11 @@ test("英語の正解は算数・漢字バッジに算入されない", () => {
   assert.ok(!e.has("kanji-100"));
 });
 
-test("理科バッジ: BADGES に sci-100/sci-500 があり総数23", () => {
+test("理科バッジ: BADGES に sci-100/sci-500 があり総数25", () => {
   const ids = BADGES.map((b) => b.id);
   assert.ok(ids.includes("sci-100"));
   assert.ok(ids.includes("sci-500"));
-  assert.equal(BADGES.length, 23);
+  assert.equal(BADGES.length, 25);
 });
 
 test("理科の正解は sci-100 に算入され、math/kanji には算入されない", () => {
@@ -180,4 +180,27 @@ test("理科の正解は sci-100 に算入され、math/kanji には算入され
   assert.ok(e.has("sci-100"), "sci-がsci-100に算入されていない");
   assert.ok(!e.has("math-100"), "sci-がmath-100に誤算入");
   assert.ok(!e.has("kanji-100"), "sci-がkanji-100に誤算入");
+});
+
+test("社会バッジ: BADGES に soc-100/soc-500 があり総数25", () => {
+  const ids = BADGES.map((b) => b.id);
+  assert.ok(ids.includes("soc-100"));
+  assert.ok(ids.includes("soc-500"));
+  assert.equal(BADGES.length, 25);
+});
+
+test("社会の正解は soc-100 に算入され、math/kanji/理科には算入されない", () => {
+  const attempts = [];
+  for (let i = 0; i < 100; i++)
+    attempts.push({
+      profileId: "p1",
+      skillTag: "soc-chizu-g3",
+      correct: true,
+      date: "2026-07-11",
+    });
+  const e = earnedBadges(badgeContext(makeState({}, attempts), "p1", IDS));
+  assert.ok(e.has("soc-100"), "soc-がsoc-100に算入されていない");
+  assert.ok(!e.has("math-100"), "soc-がmath-100に誤算入");
+  assert.ok(!e.has("kanji-100"), "soc-がkanji-100に誤算入");
+  assert.ok(!e.has("sci-100"), "soc-がsci-100に誤算入");
 });
