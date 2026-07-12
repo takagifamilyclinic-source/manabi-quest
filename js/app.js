@@ -26,6 +26,8 @@ import {
   sessionGain,
   isEvolved,
 } from "./progress-calc.js";
+import { audio } from "./audio.js";
+import { trackForScreen } from "./audio-util.js";
 
 const MONSTER_IDS = MONSTERS.map((m) => m.id);
 
@@ -46,11 +48,20 @@ const esc = (s) =>
   );
 
 const $ = (sel) => document.querySelector(sel);
+let __currentScreen = null;
+let __audioUnlocked = false;
+function applyScreenTrack(sel) {
+  __currentScreen = sel;
+  if (!__audioUnlocked) return;
+  const t = trackForScreen(sel);
+  if (t) audio.playTrack(t);
+}
 function show(id) {
   document
     .querySelectorAll(".screen")
     .forEach((s) => s.classList.add("hidden"));
   $(id).classList.remove("hidden");
+  applyScreenTrack(id);
 }
 function face(m, cls = "face") {
   return m.img
@@ -188,6 +199,12 @@ function renderParentDash() {
       <select id="ex-reward">${rewardOpts}</select>
       <button id="ex-do">こうかん</button>
       <div id="ex-msg" class="ex-msg"></div></div>
+    <div class="vol-row">
+      <span>おんりょう</span>
+      <input type="range" id="volRange" min="0" max="100" value="${Math.round(
+        audio.getVolume() * 100,
+      )}">
+    </div>
     <button id="p-export">きろくを 書き出す</button>
     <textarea id="p-export-area" class="export" readonly></textarea>
     <button id="p-pin" class="secondary">PINを かえる</button>
@@ -257,6 +274,10 @@ function renderParentDash() {
   });
   $("#p-back").addEventListener("click", renderProfile);
   show("#screen-parent");
+  const vr = document.querySelector("#volRange");
+  if (vr) {
+    vr.addEventListener("input", () => audio.setVolume(Number(vr.value) / 100));
+  }
 }
 
 function renderHome() {
@@ -278,13 +299,26 @@ function renderHome() {
     <button id="btn-badges" class="secondary">🏅 バッジちょう</button>
     <button id="btn-reward" class="secondary">🎁 ごほうび</button>
     <button id="btn-back" class="secondary">👤 プレイヤーをかえる</button>
+    <button class="sound-toggle" id="soundToggle" aria-label="おと">${
+      audio.isMuted() ? "🔇" : "🔊"
+    }</button>
   `;
-  $("#btn-battle").addEventListener("click", renderSubject);
+  $("#btn-battle").addEventListener("click", () => {
+    audio.playSfx("button");
+    renderSubject();
+  });
   $("#btn-zukan").addEventListener("click", renderZukan);
   $("#btn-badges").addEventListener("click", renderBadges);
   $("#btn-reward").addEventListener("click", renderReward);
   $("#btn-back").addEventListener("click", renderProfile);
   show("#screen-home");
+  const st = document.querySelector("#soundToggle");
+  if (st) {
+    st.addEventListener("click", () => {
+      audio.setMuted(!audio.isMuted());
+      st.textContent = audio.isMuted() ? "🔇" : "🔊";
+    });
+  }
 }
 
 function renderBadges() {
@@ -350,12 +384,27 @@ function renderSubject() {
     ${shakaiBtn}
     <button id="sub-back" class="secondary">もどる</button>
   `;
-  $("#sub-math").addEventListener("click", () => startBattle("math"));
-  $("#sub-kanji").addEventListener("click", () => startBattle("kanji"));
-  $("#sub-eng").addEventListener("click", () => startBattle("english"));
+  $("#sub-math").addEventListener("click", () => {
+    audio.playSfx("button");
+    startBattle("math");
+  });
+  $("#sub-kanji").addEventListener("click", () => {
+    audio.playSfx("button");
+    startBattle("kanji");
+  });
+  $("#sub-eng").addEventListener("click", () => {
+    audio.playSfx("button");
+    startBattle("english");
+  });
   if (upper) {
-    $("#sub-sci").addEventListener("click", () => startBattle("science"));
-    $("#sub-soc").addEventListener("click", () => startBattle("social"));
+    $("#sub-sci").addEventListener("click", () => {
+      audio.playSfx("button");
+      startBattle("science");
+    });
+    $("#sub-soc").addEventListener("click", () => {
+      audio.playSfx("button");
+      startBattle("social");
+    });
   }
   $("#sub-back").addEventListener("click", renderHome);
   show("#screen-subject");
@@ -453,6 +502,7 @@ function submitAnswer() {
   const { battle, correct, question } = answer(app.battle, app.input);
   app.battle = battle;
   app.input = "";
+  audio.playSfx(correct ? "correct" : "wrong");
   const fb = document.createElement("div");
   fb.className = "feedback";
   fb.innerHTML = correct
@@ -517,6 +567,8 @@ function finishBattle() {
   `;
   $("#btn-home").addEventListener("click", renderHome);
   show("#screen-result");
+  audio.playSfx("capture");
+  audio.playJingle("victory", () => audio.playTrack("field"));
 }
 
 function renderZukan() {
@@ -582,3 +634,25 @@ function renderReward() {
 renderProfile();
 if ("serviceWorker" in navigator)
   navigator.serviceWorker.register("./sw.js").catch(() => {});
+
+// 最初のユーザー操作でオーディオを解錠（自動再生ブロック対策）
+function unlockAudioOnce() {
+  __audioUnlocked = true;
+  audio.init();
+  if (__currentScreen) {
+    const t = trackForScreen(__currentScreen);
+    if (t) audio.playTrack(t);
+  }
+  window.removeEventListener("pointerdown", unlockAudioOnce);
+}
+window.addEventListener("pointerdown", unlockAudioOnce);
+
+// 省電力: タブ非表示で停止、復帰で現在画面の曲を再開
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    audio.stopTrack();
+  } else if (__audioUnlocked && __currentScreen) {
+    const t = trackForScreen(__currentScreen);
+    if (t) audio.playTrack(t);
+  }
+});

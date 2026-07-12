@@ -26,6 +26,7 @@ body {
   flex-direction: column;
   gap: 16px;
   min-height: 90vh;
+  position: relative;
 }
 .hidden {
   display: none !important;
@@ -417,4 +418,27 @@ button.speak {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ===== BGM/SE UI(第7弾: サウンドトグル・音量スライダー) ===== */
+.sound-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 999px;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+}
+.vol-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+.vol-row input[type="range"] {
+  flex: 1;
 }
