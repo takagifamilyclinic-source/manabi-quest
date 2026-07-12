@@ -46,6 +46,19 @@ test("TRACKS: victory は短い（全声部の最長 < 4秒）", () => {
   assert.ok(longest < 4, `victory 尺 ${longest.toFixed(2)}s < 4s`);
 });
 
+test("TRACKS: 各曲は全声部の拍合計が一致（ループ同期）", () => {
+  for (const [name, tr] of Object.entries(TRACKS)) {
+    const totals = Object.values(tr.voices).map((seq) =>
+      seq.reduce((s, ev) => s + ev.d, 0),
+    );
+    const diff = Math.max(...totals) - Math.min(...totals);
+    assert.ok(
+      diff < 1e-9,
+      `${name} の声部間で拍合計が不一致: ${totals.join("/")}`,
+    );
+  }
+});
+
 test("SFX: 4種そろい・妥当", () => {
   assert.deepEqual(Object.keys(SFX).sort(), [
     "button",
