@@ -23,11 +23,16 @@ let ctx = null;
 let master = null; // 音量ノード
 let musicGain = null;
 let sfxGain = null;
-let settings = parseAudioSettings(
-  typeof localStorage !== "undefined"
-    ? localStorage.getItem(STORAGE_KEY)
-    : null,
-);
+function readSettingsRaw() {
+  try {
+    return typeof localStorage !== "undefined"
+      ? localStorage.getItem(STORAGE_KEY)
+      : null;
+  } catch {
+    return null;
+  }
+}
+let settings = parseAudioSettings(readSettingsRaw());
 let current = null; // 現在のループ曲名 or null
 let timer = null;
 let voiceState = null; // { [voice]: {seq, idx, time, beatSec, wave, dest} }
@@ -44,8 +49,8 @@ function applyVolume() {
 }
 
 function ensureCtx() {
-  if (ctx || !acCtor()) return;
   const AC = acCtor();
+  if (ctx || !AC) return;
   ctx = new AC();
   master = ctx.createGain();
   applyVolume();
@@ -69,10 +74,11 @@ function playNote(wave, freq, at, dur, dest) {
   const r = Math.min(0.06, dur * 0.4);
   const peak = 0.9;
   const sus = 0.6;
-  const relStart = Math.max(at + a + 0.02, at + dur - r);
+  const susTime = at + a + 0.03;
+  const relStart = Math.max(susTime, at + dur - r);
   g.gain.setValueAtTime(0, at);
   g.gain.linearRampToValueAtTime(peak, at + a);
-  g.gain.linearRampToValueAtTime(sus, at + a + 0.03);
+  g.gain.linearRampToValueAtTime(sus, susTime);
   g.gain.setValueAtTime(sus, relStart);
   g.gain.linearRampToValueAtTime(0.0001, at + dur);
   o.connect(g);
@@ -126,6 +132,10 @@ function scheduleTick(loop) {
       }
       const ev = st.seq[st.idx];
       const dur = ev.d * st.beatSec;
+      if (dur <= 0) {
+        st.idx++;
+        continue;
+      }
       if (ev.n !== "R") {
         playNote(st.wave, noteToFreq(ev.n), st.time, dur, st.dest);
       }
