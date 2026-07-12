@@ -49,8 +49,10 @@ const esc = (s) =>
 
 const $ = (sel) => document.querySelector(sel);
 let __currentScreen = null;
+let __audioUnlocked = false;
 function applyScreenTrack(sel) {
   __currentScreen = sel;
+  if (!__audioUnlocked) return;
   const t = trackForScreen(sel);
   if (t) audio.playTrack(t);
 }
@@ -635,6 +637,7 @@ if ("serviceWorker" in navigator)
 
 // 最初のユーザー操作でオーディオを解錠（自動再生ブロック対策）
 function unlockAudioOnce() {
+  __audioUnlocked = true;
   audio.init();
   if (__currentScreen) {
     const t = trackForScreen(__currentScreen);
@@ -648,7 +651,7 @@ window.addEventListener("pointerdown", unlockAudioOnce);
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     audio.stopTrack();
-  } else if (__currentScreen) {
+  } else if (__audioUnlocked && __currentScreen) {
     const t = trackForScreen(__currentScreen);
     if (t) audio.playTrack(t);
   }
