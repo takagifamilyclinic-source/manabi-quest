@@ -1,7 +1,17 @@
 // 純ロジック（AudioContext/localStorage に触れない・node --test 対象）
 const NOTE_INDEX = {
-  C: 0, "C#": 1, D: 2, "D#": 3, E: 4, F: 5,
-  "F#": 6, G: 7, "G#": 8, A: 9, "A#": 10, B: 11,
+  C: 0,
+  "C#": 1,
+  D: 2,
+  "D#": 3,
+  E: 4,
+  F: 5,
+  "F#": 6,
+  G: 7,
+  "G#": 8,
+  A: 9,
+  "A#": 10,
+  B: 11,
 };
 
 // 音名(例 "A4","C#5") → 周波数Hz。休符/不正は 0。A4=440基準・等分平均律。
@@ -9,13 +19,20 @@ export function noteToFreq(note) {
   if (typeof note !== "string" || note === "R") return 0;
   const m = /^([A-G]#?)(-?\d+)$/.exec(note);
   if (!m) return 0;
+  if (NOTE_INDEX[m[1]] === undefined) return 0;
   const midi = NOTE_INDEX[m[1]] + (parseInt(m[2], 10) + 1) * 12; // A4 => 69
   return 440 * Math.pow(2, (midi - 69) / 12);
 }
 
 const FIELD_SCREENS = new Set([
-  "#screen-home", "#screen-subject", "#screen-zukan", "#screen-badges",
-  "#screen-profile", "#screen-parent", "#screen-reward", "#screen-result",
+  "#screen-home",
+  "#screen-subject",
+  "#screen-zukan",
+  "#screen-badges",
+  "#screen-profile",
+  "#screen-parent",
+  "#screen-reward",
+  "#screen-result",
 ]);
 
 // 画面ID → ループ曲名。未知は null（曲を変えない）。

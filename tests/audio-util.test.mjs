@@ -25,6 +25,9 @@ test("noteToFreq: 休符Rと不正入力は0", () => {
   assert.equal(noteToFreq(""), 0);
   assert.equal(noteToFreq("H9"), 0);
   assert.equal(noteToFreq(null), 0);
+  assert.equal(noteToFreq("B#4"), 0);
+  assert.equal(noteToFreq("E#4"), 0);
+  assert.equal(noteToFreq("B#"), 0);
 });
 
 test("trackForScreen: バトルはbattle、他の主要画面はfield", () => {
