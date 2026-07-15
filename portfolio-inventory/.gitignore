@@ -1,0 +1,8 @@
+# 個人のフォルダパスを含むため共有しない
+config.yaml
+# 生スナップショットは個人データなので既定では共有しない(.gitkeep は残す)
+history/*.json
+# アーカイブされた実プロジェクトも共有しない
+archive/*
+!archive/.gitkeep
+!history/.gitkeep

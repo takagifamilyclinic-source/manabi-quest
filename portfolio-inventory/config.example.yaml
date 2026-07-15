@@ -1,0 +1,27 @@
+# config.example.yaml — これをコピーして config.yaml を作ってください。
+#   cp config.example.yaml config.yaml   （Windows: copy config.example.yaml config.yaml）
+# config.yaml は個人のフォルダパスを含むため .gitignore 済み(共有されません)。
+
+# スキャン対象のルートフォルダ(複数可)。このフォルダの「直下」がプロジェクト候補になります。
+# Windows のパスは / でも \ でも可。~ はホームに展開されます。
+roots:
+  - ~/dev
+  - ~/projects
+  # - C:/Users/you/Documents/開発
+
+# 除外するディレクトリ名(直下・階層内どちらでもマッチ)。前方/後方 * のワイルドカード可。
+exclude:
+  - node_modules
+  - .git
+  - venv
+  - .venv
+  - __pycache__
+  - dist
+  - build
+  - work
+  - .next
+  - target
+  - "*.egg-info"
+
+# 何日以上更新が無いプロジェクトを「放置(⚫)」とみなすか。
+stale_days: 90
